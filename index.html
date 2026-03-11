@@ -1388,6 +1388,110 @@ select option { background: var(--panel-bg); }
   display: block;
 }
 .doc-page { position: relative; }
+/* ════════════ DOCUMENT TEMPLATES ════════════ */
+/* tpl-minimal */
+.doc-page.tpl-minimal .doc-header { border-bottom: 1px solid #ccc; padding: 22px 36px 16px; }
+.doc-page.tpl-minimal .doc-company-name-fallback,
+.doc-page.tpl-minimal .doc-company-name-with-logo { color: #333 !important; }
+.doc-page.tpl-minimal .doc-doc-type { font-size: 20px; font-weight: 700; letter-spacing: 2px; }
+.doc-page.tpl-minimal .doc-meta { background: #fff !important; border-bottom: 1px solid #ccc; }
+.doc-page.tpl-minimal .doc-meta-label { color: #888 !important; }
+.doc-page.tpl-minimal .doc-subject { border-bottom: 1px solid #ccc; }
+.doc-page.tpl-minimal .doc-table thead tr { background: #f2f2f2 !important; }
+.doc-page.tpl-minimal .doc-table thead th { color: #333 !important; }
+.doc-page.tpl-minimal .doc-totals-section { border-top: 1px solid #ccc; }
+.doc-page.tpl-minimal .doc-bottom-section { border-top: 1px solid #ccc; }
+.doc-page.tpl-minimal .doc-footer { border-top: 1px solid #ccc; background: #fff !important; }
+.doc-page.tpl-minimal .doc-footer-company { color: #333 !important; font-weight: 600; }
+.doc-page.tpl-minimal .doc-footer-contact,
+.doc-page.tpl-minimal .doc-footer-right { color: #888 !important; opacity: 1; }
+.doc-page.tpl-minimal .doc-annexure-header { border-bottom: 1px solid #ccc; }
+.doc-page.tpl-minimal .doc-annexure-title { color: #333 !important; }
+
+/* tpl-corporate */
+.doc-page.tpl-corporate .doc-header { background: var(--doc-accent); border-bottom: none; padding: 22px 36px; }
+.doc-page.tpl-corporate .doc-company-name-fallback,
+.doc-page.tpl-corporate .doc-company-name-with-logo { color: #fff !important; }
+.doc-page.tpl-corporate .doc-company-tagline { color: rgba(255,255,255,0.72) !important; opacity: 1 !important; }
+.doc-page.tpl-corporate .doc-doc-type { color: #fff !important; font-size: 24px; }
+.doc-page.tpl-corporate .doc-ref-number,
+.doc-page.tpl-corporate .doc-date-line { color: rgba(255,255,255,0.78) !important; opacity: 1 !important; }
+.doc-page.tpl-corporate .doc-meta { background: #fff !important; border-bottom: 2px solid var(--doc-accent); }
+.doc-page.tpl-corporate .doc-footer { border-top: none; }
+.doc-page.tpl-corporate .doc-annexure-header { background: var(--doc-accent); border-bottom: none; }
+.doc-page.tpl-corporate .doc-annexure-title,
+.doc-page.tpl-corporate .doc-annexure-sub,
+.doc-page.tpl-corporate .doc-annexure-ref { color: #fff !important; opacity: 1 !important; }
+
+/* tpl-stripe */
+.doc-page.tpl-stripe { border-left: 5px solid var(--doc-accent); }
+.doc-page.tpl-stripe .doc-header { border-bottom: 1px solid #e0e4ef; padding: 22px 34px 18px 32px; }
+.doc-page.tpl-stripe .doc-meta { background: #fff !important; border-bottom: 1px solid #e0e4ef; padding-left: 32px; }
+.doc-page.tpl-stripe .doc-subject,
+.doc-page.tpl-stripe .doc-table-section,
+.doc-page.tpl-stripe .doc-totals-section,
+.doc-page.tpl-stripe .doc-notes-section,
+.doc-page.tpl-stripe .doc-bank-details,
+.doc-page.tpl-stripe .doc-terms-section { padding-left: 32px; }
+.doc-page.tpl-stripe .doc-footer { border-top: 1px solid #e0e4ef; background: #fff !important; padding-left: 32px; }
+.doc-page.tpl-stripe .doc-footer-company { color: var(--doc-accent) !important; }
+.doc-page.tpl-stripe .doc-annexure-header { padding-left: 32px; border-bottom: 1px solid #e0e4ef; }
+
+/* tpl-bold */
+.doc-page.tpl-bold .doc-header { border-bottom: 4px solid var(--doc-accent); background: #fafafa; padding: 26px 36px; }
+.doc-page.tpl-bold .doc-doc-type { font-size: 32px; letter-spacing: 3px; font-weight: 900; }
+.doc-page.tpl-bold .doc-company-name-fallback { font-size: 28px; letter-spacing: 1px; }
+.doc-page.tpl-bold .doc-meta { background: #f4f5f8 !important; border-bottom: 2px solid var(--doc-accent); }
+.doc-page.tpl-bold .doc-table thead tr { background: #1a1a2e !important; }
+.doc-page.tpl-bold .doc-totals-section { border-top: 3px solid var(--doc-accent); }
+.doc-page.tpl-bold .doc-footer { border-top: 4px solid var(--doc-accent); }
+.doc-page.tpl-bold .doc-annexure-header { border-bottom: 4px solid var(--doc-accent); }
+.doc-page.tpl-bold .doc-annexure-title { font-size: 26px; font-weight: 900; letter-spacing: 3px; }
+
+/* tpl-executive */
+.doc-page.tpl-executive .doc-header { border-top: 3px solid var(--doc-accent); border-bottom: 1px solid #ddd; padding: 20px 36px 16px; }
+.doc-page.tpl-executive .doc-doc-type { font-size: 18px; font-weight: 700; letter-spacing: 4px; border-bottom: 1px solid var(--doc-accent); padding-bottom: 4px; display: inline-block; }
+.doc-page.tpl-executive .doc-meta { background: #f9f9fb !important; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }
+.doc-page.tpl-executive .doc-table thead tr { background: var(--doc-accent) !important; }
+.doc-page.tpl-executive .doc-totals-section { border-top: 2px solid #ddd; }
+.doc-page.tpl-executive .doc-bottom-section { border-top: 2px solid #ddd; }
+.doc-page.tpl-executive .doc-footer { border-top: 3px solid var(--doc-accent); }
+.doc-page.tpl-executive .doc-annexure-header { border-top: 3px solid var(--doc-accent); border-bottom: 1px solid #ddd; }
+.doc-page.tpl-executive .doc-annexure-title { font-size: 18px; letter-spacing: 4px; font-weight: 700; }
+
+/* tpl-classic-dark */
+.doc-page.tpl-classic-dark { background: #f5f5f0; }
+.doc-page.tpl-classic-dark .doc-header { background: #1a1a2e; border-bottom: 3px solid var(--doc-accent); padding: 24px 36px; }
+.doc-page.tpl-classic-dark .doc-company-name-fallback,
+.doc-page.tpl-classic-dark .doc-company-name-with-logo { color: #fff !important; }
+.doc-page.tpl-classic-dark .doc-company-tagline { color: rgba(255,255,255,0.55) !important; opacity: 1 !important; }
+.doc-page.tpl-classic-dark .doc-doc-type { color: var(--doc-accent) !important; }
+.doc-page.tpl-classic-dark .doc-ref-number,
+.doc-page.tpl-classic-dark .doc-date-line { color: rgba(255,255,255,0.65) !important; opacity: 1 !important; }
+.doc-page.tpl-classic-dark .doc-meta { background: #eeede8 !important; }
+.doc-page.tpl-classic-dark .doc-footer { background: #1a1a2e !important; border-top: 3px solid var(--doc-accent); }
+.doc-page.tpl-classic-dark .doc-footer-company { color: #fff !important; }
+.doc-page.tpl-classic-dark .doc-footer-contact,
+.doc-page.tpl-classic-dark .doc-footer-right { color: rgba(255,255,255,0.6) !important; opacity: 1 !important; }
+.doc-page.tpl-classic-dark .doc-annexure-header { background: #1a1a2e; border-bottom: 3px solid var(--doc-accent); }
+.doc-page.tpl-classic-dark .doc-annexure-title { color: var(--doc-accent) !important; }
+.doc-page.tpl-classic-dark .doc-annexure-sub,
+.doc-page.tpl-classic-dark .doc-annexure-ref { color: rgba(255,255,255,0.65) !important; opacity: 1 !important; }
+
+
+/* ── Template Picker ── */
+.tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 2px 0 4px; }
+.tpl-card {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 6px 4px; border-radius: 7px; cursor: pointer;
+  border: 2px solid var(--panel-border); background: var(--panel-mid); transition: all 0.15s;
+}
+.tpl-card:hover { border-color: var(--accent); }
+.tpl-card.active { border-color: var(--accent); background: rgba(200,23,30,0.07); }
+.tpl-preview { width: 100%; border-radius: 4px; overflow: hidden; line-height: 0; }
+.tpl-preview svg { width: 100%; height: auto; display: block; }
+.tpl-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; color: var(--text-secondary); text-align: center; }
+.tpl-card.active .tpl-label { color: var(--accent); }
 
 /* ================================================================
    RESPONSIVE DESIGN — Tablet & Mobile
@@ -3284,6 +3388,13 @@ select option { background: var(--panel-bg); }
       <div class="panel-section" id="panel-branding">
 
         <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Document Templates
+        </div>
+        <div class="tpl-grid" id="tplGrid"></div>
+        <div class="spacer"></div>
+
+        <div class="section-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
           Document Colors
         </div>
@@ -3454,6 +3565,7 @@ select option { background: var(--panel-bg); }
 let state = {
   viewingLocked: null,
   docType: 'quotation',
+  template: 'classic',
   activeClientId: null,
   activeCompanyId: null,
   logoData: null,
@@ -3845,6 +3957,7 @@ async function saveCurrentQuotation() {
     // Full state clone
     docType:    state.docType,
     colors:     JSON.parse(JSON.stringify(state.colors)),
+    template:   state.template || 'classic',
     items:      JSON.parse(JSON.stringify(state.items)),
     showItemDiscount:  state.showItemDiscount  || false,
     showDiscountOnDoc: state.showDiscountOnDoc || false,
@@ -3884,6 +3997,7 @@ async function openQuotation(uid) {
   // Restore state
   if (snap.docType) { state.docType = snap.docType; const sel = document.getElementById('docTypeSelect'); if (sel) sel.value = snap.docType; }
   if (snap.colors)  { state.colors = snap.colors;  applyColors(); }
+  if (snap.template) { applyTemplate(snap.template, false); }
   if (snap.items)   { state.items  = snap.items; }
   if (snap.showItemDiscount !== undefined) {
     state.showItemDiscount = snap.showItemDiscount;
@@ -4051,6 +4165,7 @@ function showPanel(name) {
   document.getElementById('tab-' + name).classList.add('active');
   if (name === 'client'      && typeof renderClientDb       === 'function') renderClientDb();
   if (name === 'quotations'  && typeof renderQuotationsList === 'function') renderQuotationsList();
+  if (name === 'branding'   && typeof renderTemplatePicker === 'function') renderTemplatePicker();
 }
 window.showPanel = showPanel;
 
@@ -5193,6 +5308,50 @@ function applyColorHex(which, value) {
     if (sw) sw.style.background = value;
     applyColors();
   }
+}
+
+// ── Template definitions ──
+const TEMPLATES = [
+  { id: 'classic',      name: 'Classic',     desc: 'Accent border · gray meta · color footer' },
+  { id: 'minimal',      name: 'Minimal',     desc: 'Clean white · thin lines · no fills' },
+  { id: 'corporate',    name: 'Corporate',   desc: 'Full accent header · white body' },
+  { id: 'stripe',       name: 'Stripe',      desc: 'Left accent stripe · clean layout' },
+  { id: 'bold',         name: 'Bold',        desc: 'Large type · dark table header' },
+  { id: 'executive',    name: 'Executive',   desc: 'Double rules · refined spacing' },
+  { id: 'classic-dark', name: 'Dark Header', desc: 'Dark header & footer · cream body' },
+];
+
+function renderTemplatePicker() {
+  const grid = document.getElementById('tplGrid');
+  if (!grid) return;
+  const a = state.colors?.accent || '#C8171E';
+  const svgs = {
+    'classic':      `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect width="80" height="14" fill="${a}" opacity=".12"/><rect y="13" width="80" height="2" fill="${a}"/><rect x="4" y="4" width="18" height="5" rx="1" fill="${a}" opacity=".4"/><rect x="52" y="3" width="24" height="4" rx="1" fill="${a}" opacity=".7"/><rect y="15" width="80" height="10" fill="#f4f5f8"/><rect x="4" y="27" width="72" height="4" fill="${a}" opacity=".2"/><rect x="4" y="33" width="58" height="1.5" rx=".5" fill="#ddd"/><rect x="4" y="37" width="44" height="1.5" rx=".5" fill="#ddd"/><rect y="48" width="80" height="8" fill="${a}" opacity=".85"/></svg>`,
+    'minimal':      `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect x="4" y="5" width="18" height="5" rx="1" fill="#aaa" opacity=".4"/><rect x="52" y="4" width="24" height="4" rx="1" fill="#555" opacity=".5"/><rect y="14" width="80" height=".8" fill="#ccc"/><rect x="4" y="17" width="72" height="3" fill="#f0f0f0"/><rect x="4" y="27" width="72" height="3" fill="#f0f0f0"/><rect x="4" y="33" width="58" height="1.5" rx=".5" fill="#ddd"/><rect y="48" width="80" height=".8" fill="#bbb"/></svg>`,
+    'corporate':    `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect width="80" height="15" fill="${a}"/><rect x="4" y="4" width="18" height="5" rx="1" fill="#fff" opacity=".7"/><rect x="50" y="3" width="26" height="5" rx="1" fill="#fff" opacity=".9"/><rect x="4" y="18" width="72" height="3" fill="#f8f8f8"/><rect x="4" y="27" width="72" height="3" fill="${a}" opacity=".15"/><rect y="48" width="80" height="8" fill="${a}"/></svg>`,
+    'stripe':       `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect width="5" height="56" fill="${a}"/><rect x="9" y="5" width="18" height="5" rx="1" fill="#aaa" opacity=".4"/><rect x="52" y="4" width="24" height="4" rx="1" fill="#555" opacity=".5"/><rect x="5" y="14" width="75" height=".8" fill="#ddd"/><rect x="9" y="27" width="67" height="3" fill="${a}" opacity=".15"/><rect x="9" y="33" width="55" height="1.5" rx=".5" fill="#ddd"/><rect x="5" y="48" width="75" height=".8" fill="${a}" opacity=".6"/></svg>`,
+    'bold':         `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect width="80" height="16" fill="#fafafa"/><rect x="4" y="4" width="20" height="7" rx="1" fill="${a}" opacity=".5"/><rect x="46" y="2" width="30" height="9" rx="1" fill="${a}" opacity=".8"/><rect y="16" width="80" height="3" fill="${a}"/><rect x="4" y="27" width="72" height="4" fill="#1a1a2e"/><rect x="4" y="33" width="58" height="1.5" rx=".5" fill="#ddd"/><rect y="48" width="80" height="8" fill="${a}"/></svg>`,
+    'executive':    `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect y="0" width="80" height="2" fill="${a}"/><rect x="4" y="7" width="18" height="5" rx="1" fill="#aaa" opacity=".4"/><rect x="52" y="7" width="24" height="4" rx="1" fill="#555" opacity=".5"/><rect y="16" width="80" height="1.5" fill="${a}"/><rect x="4" y="19" width="72" height="3" fill="#f9f9fb"/><rect x="4" y="27" width="72" height="3" fill="${a}" opacity=".15"/><rect y="49" width="80" height="2" fill="${a}"/></svg>`,
+    'classic-dark': `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#f5f5f0"/><rect width="80" height="15" fill="#1a1a2e"/><rect x="4" y="4" width="18" height="5" rx="1" fill="#fff" opacity=".4"/><rect x="52" y="3" width="24" height="4" rx="1" fill="${a}" opacity=".9"/><rect y="15" width="80" height="2" fill="${a}"/><rect x="4" y="19" width="72" height="3" fill="#eeede8"/><rect x="4" y="27" width="72" height="3" fill="${a}" opacity=".15"/><rect y="48" width="80" height="8" fill="#1a1a2e"/></svg>`,
+  };
+  grid.innerHTML = TEMPLATES.map(t => `
+    <div class="tpl-card${(state.template||'classic') === t.id ? ' active' : ''}"
+      data-tpl="${t.id}" onclick="applyTemplate('${t.id}')" title="${t.desc}">
+      <div class="tpl-preview">${svgs[t.id]||''}</div>
+      <div class="tpl-label">${t.name}</div>
+    </div>`).join('');
+}
+
+function applyTemplate(id, doSync = true) {
+  state.template = id || 'classic';
+  const docPage = document.getElementById('docPage');
+  if (!docPage) return;
+  TEMPLATES.forEach(t => docPage.classList.remove('tpl-' + t.id));
+  if (id && id !== 'classic') docPage.classList.add('tpl-' + id);
+  document.querySelectorAll('.tpl-card').forEach(card =>
+    card.classList.toggle('active', card.dataset.tpl === id));
+  applyColors();
+  if (doSync) syncDoc();
 }
 
 function applyColors() {
