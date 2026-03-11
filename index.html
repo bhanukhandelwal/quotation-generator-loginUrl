@@ -1388,95 +1388,257 @@ select option { background: var(--panel-bg); }
   display: block;
 }
 .doc-page { position: relative; }
-/* ════════════ DOCUMENT TEMPLATES ════════════ */
-/* tpl-minimal */
-.doc-page.tpl-minimal .doc-header { border-bottom: 1px solid #ccc; padding: 22px 36px 16px; }
-.doc-page.tpl-minimal .doc-company-name-fallback,
-.doc-page.tpl-minimal .doc-company-name-with-logo { color: #333 !important; }
-.doc-page.tpl-minimal .doc-doc-type { font-size: 20px; font-weight: 700; letter-spacing: 2px; }
-.doc-page.tpl-minimal .doc-meta { background: #fff !important; border-bottom: 1px solid #ccc; }
-.doc-page.tpl-minimal .doc-meta-label { color: #888 !important; }
-.doc-page.tpl-minimal .doc-subject { border-bottom: 1px solid #ccc; }
-.doc-page.tpl-minimal .doc-table thead tr { background: #f2f2f2 !important; }
-.doc-page.tpl-minimal .doc-table thead th { color: #333 !important; }
-.doc-page.tpl-minimal .doc-totals-section { border-top: 1px solid #ccc; }
-.doc-page.tpl-minimal .doc-bottom-section { border-top: 1px solid #ccc; }
-.doc-page.tpl-minimal .doc-footer { border-top: 1px solid #ccc; background: #fff !important; }
-.doc-page.tpl-minimal .doc-footer-company { color: #333 !important; font-weight: 600; }
-.doc-page.tpl-minimal .doc-footer-contact,
-.doc-page.tpl-minimal .doc-footer-right { color: #888 !important; opacity: 1; }
-.doc-page.tpl-minimal .doc-annexure-header { border-bottom: 1px solid #ccc; }
-.doc-page.tpl-minimal .doc-annexure-title { color: #333 !important; }
 
-/* tpl-corporate */
-.doc-page.tpl-corporate .doc-header { background: var(--doc-accent); border-bottom: none; padding: 22px 36px; }
+/* ══════════════════════════════════════════════
+   TEMPLATE PICKER WIDGET
+   ══════════════════════════════════════════════ */
+.tpl-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px; padding: 2px 0 6px;
+}
+.tpl-card {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 7px 5px 6px; border-radius: 7px; cursor: pointer;
+  border: 2px solid var(--panel-border); background: var(--panel-mid);
+  transition: border-color 0.15s, background 0.15s;
+}
+.tpl-card:hover  { border-color: var(--accent); }
+.tpl-card.active { border-color: var(--accent); background: rgba(200,23,30,0.07); }
+.tpl-preview     { width: 100%; border-radius: 3px; overflow: hidden; line-height: 0; }
+.tpl-preview svg { width: 100%; height: auto; display: block; }
+.tpl-label       { font-size: 10px; font-weight: 600; color: var(--text-secondary); text-align: center; }
+.tpl-card.active .tpl-label { color: var(--accent); }
+
+/* ══════════════════════════════════════════════
+   DOCUMENT TEMPLATES
+   Color rules: ONLY use CSS vars, never hex.
+     --doc-accent      accent colour
+     --doc-text        body text colour
+     --doc-header-bg   meta band background
+     --doc-footer-bg   footer bar background
+     --doc-accent-text white or text (auto contrast on accent)
+     --doc-footer-text white or accent (auto contrast on footer)
+   ══════════════════════════════════════════════ */
+
+/* ─── 2. MINIMAL ─────────────────────────────────
+   Same left/right structure as Classic.
+   No fills anywhere — only ruled lines.
+   Table header: faint tint, text color cols.      */
+.doc-page.tpl-minimal .doc-header {
+  border-bottom: 1.5px solid var(--doc-accent) !important;
+  padding: 22px 36px 16px;
+}
+.doc-page.tpl-minimal .doc-company-name-fallback,
+.doc-page.tpl-minimal .doc-company-name-with-logo { color: var(--doc-text) !important; }
+.doc-page.tpl-minimal .doc-doc-type { font-size: 19px; font-weight: 700; letter-spacing: 3px; }
+.doc-page.tpl-minimal .doc-meta {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.doc-page.tpl-minimal .doc-meta-block + .doc-meta-block {
+  border-left: 1px solid rgba(0,0,0,0.1); padding-left: 16px;
+}
+.doc-page.tpl-minimal .doc-table thead tr { background: rgba(0,0,0,0.04) !important; }
+.doc-page.tpl-minimal .doc-table thead th { color: var(--doc-text) !important; opacity: 0.7; }
+.doc-page.tpl-minimal .doc-totals-section { border-top: 1px solid rgba(0,0,0,0.1); }
+.doc-page.tpl-minimal .doc-bottom-section  { border-top: 1px solid rgba(0,0,0,0.1); }
+.doc-page.tpl-minimal .doc-footer {
+  background: transparent !important;
+  border-top: 1.5px solid var(--doc-accent) !important;
+}
+.doc-page.tpl-minimal .doc-footer-company { color: var(--doc-text) !important; font-weight: 600; }
+.doc-page.tpl-minimal .doc-footer-contact,
+.doc-page.tpl-minimal .doc-footer-right   { color: var(--doc-text) !important; opacity: 0.4; }
+.doc-page.tpl-minimal .doc-annexure-header { border-bottom: 1.5px solid var(--doc-accent) !important; }
+.doc-page.tpl-minimal .doc-annexure-title  { color: var(--doc-text) !important; }
+
+/* ─── 3. CORPORATE ───────────────────────────────
+   Header: full accent background block, text inverted.
+   Meta:   white bg, 4 equal columns.
+   Footer: uses footer-bg colour as set by user.    */
+.doc-page.tpl-corporate .doc-header {
+  background: var(--doc-accent) !important;
+  border-bottom: none !important;
+  padding: 26px 36px;
+}
+.doc-page.tpl-corporate .doc-logo-area { min-height: 60px; }
 .doc-page.tpl-corporate .doc-company-name-fallback,
-.doc-page.tpl-corporate .doc-company-name-with-logo { color: #fff !important; }
-.doc-page.tpl-corporate .doc-company-tagline { color: rgba(255,255,255,0.72) !important; opacity: 1 !important; }
-.doc-page.tpl-corporate .doc-doc-type { color: #fff !important; font-size: 24px; }
+.doc-page.tpl-corporate .doc-company-name-with-logo { color: var(--doc-accent-text) !important; }
+.doc-page.tpl-corporate .doc-company-tagline { color: var(--doc-accent-text) !important; opacity: 0.7; }
+.doc-page.tpl-corporate .doc-doc-type  { color: var(--doc-accent-text) !important; font-size: 22px; }
 .doc-page.tpl-corporate .doc-ref-number,
-.doc-page.tpl-corporate .doc-date-line { color: rgba(255,255,255,0.78) !important; opacity: 1 !important; }
-.doc-page.tpl-corporate .doc-meta { background: #fff !important; border-bottom: 2px solid var(--doc-accent); }
-.doc-page.tpl-corporate .doc-footer { border-top: none; }
-.doc-page.tpl-corporate .doc-annexure-header { background: var(--doc-accent); border-bottom: none; }
+.doc-page.tpl-corporate .doc-date-line { color: var(--doc-accent-text) !important; opacity: 0.72; }
+.doc-page.tpl-corporate .doc-meta {
+  background: #fff !important;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 2px solid var(--doc-accent);
+}
+.doc-page.tpl-corporate .doc-footer { border-top: none !important; }
+.doc-page.tpl-corporate .doc-annexure-header {
+  background: var(--doc-accent) !important; border-bottom: none !important;
+}
 .doc-page.tpl-corporate .doc-annexure-title,
 .doc-page.tpl-corporate .doc-annexure-sub,
-.doc-page.tpl-corporate .doc-annexure-ref { color: #fff !important; opacity: 1 !important; }
+.doc-page.tpl-corporate .doc-annexure-ref { color: var(--doc-accent-text) !important; opacity: 1 !important; }
 
-/* tpl-stripe */
-.doc-page.tpl-stripe { border-left: 5px solid var(--doc-accent); }
-.doc-page.tpl-stripe .doc-header { border-bottom: 1px solid #e0e4ef; padding: 22px 34px 18px 32px; }
-.doc-page.tpl-stripe .doc-meta { background: #fff !important; border-bottom: 1px solid #e0e4ef; padding-left: 32px; }
-.doc-page.tpl-stripe .doc-subject,
-.doc-page.tpl-stripe .doc-table-section,
-.doc-page.tpl-stripe .doc-totals-section,
-.doc-page.tpl-stripe .doc-notes-section,
-.doc-page.tpl-stripe .doc-bank-details,
-.doc-page.tpl-stripe .doc-terms-section { padding-left: 32px; }
-.doc-page.tpl-stripe .doc-footer { border-top: 1px solid #e0e4ef; background: #fff !important; padding-left: 32px; }
+/* ─── 4. LETTERHEAD ──────────────────────────────
+   Header: company name in a full-width centred banner
+           spanning the entire top; ref/date right-
+           aligned below it as a sub-band.
+   Footer: centred, stacked.                        */
+.doc-page.tpl-letterhead .doc-header {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-bottom: 3px solid var(--doc-accent) !important;
+  gap: 0;
+}
+.doc-page.tpl-letterhead .doc-logo-area {
+  width: 100%; justify-content: center;
+  padding: 18px 36px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  min-height: unset;
+}
+.doc-page.tpl-letterhead .doc-company-name-fallback { font-size: 32px; letter-spacing: 3px; text-align: center; }
+.doc-page.tpl-letterhead .doc-company-tagline        { text-align: center; }
+.doc-page.tpl-letterhead .doc-title-block {
+  text-align: right;
+  padding: 10px 36px 12px;
+  background: var(--doc-header-bg);
+}
+.doc-page.tpl-letterhead .doc-meta { grid-template-columns: repeat(4, 1fr); }
+.doc-page.tpl-letterhead .doc-footer {
+  flex-direction: column; align-items: center;
+  gap: 2px; padding: 10px 36px;
+}
+.doc-page.tpl-letterhead .doc-footer-company { font-size: 12px; }
+.doc-page.tpl-letterhead .doc-footer-contact,
+.doc-page.tpl-letterhead .doc-footer-right   { text-align: center; }
+.doc-page.tpl-letterhead .doc-annexure-header {
+  flex-direction: column; padding: 0;
+  border-bottom: 3px solid var(--doc-accent) !important;
+}
+
+/* ─── 5. STRIPE ──────────────────────────────────
+   A 6px vertical accent bar runs full page height.
+   Content inset. Each meta block gets its own
+   3px left accent micro-stripe instead of a bg fill. */
+.doc-page.tpl-stripe { border-left: 6px solid var(--doc-accent); }
+.doc-page.tpl-stripe .doc-header {
+  border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+  padding: 22px 34px 18px 30px;
+}
+.doc-page.tpl-stripe .doc-meta {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  padding: 16px 34px 16px 30px;
+  gap: 0;
+}
+.doc-page.tpl-stripe .doc-meta-block {
+  padding: 4px 16px;
+  border-left: 3px solid var(--doc-accent);
+  margin-right: 6px;
+}
+.doc-page.tpl-stripe .doc-meta-block:first-child { border-left: none; padding-left: 0; }
+.doc-page.tpl-stripe .doc-subject        { padding-left: 30px; }
+.doc-page.tpl-stripe .doc-table-section  { padding-left: 30px; }
+.doc-page.tpl-stripe .doc-totals-section { padding-left: 30px; }
+.doc-page.tpl-stripe .doc-notes-section  { padding-left: 30px; }
+.doc-page.tpl-stripe .doc-bank-details   { padding-left: 30px; }
+.doc-page.tpl-stripe .doc-terms-section  { padding-left: 30px; }
+.doc-page.tpl-stripe .doc-footer {
+  background: transparent !important;
+  border-top: 1px solid rgba(0,0,0,0.1) !important;
+  padding-left: 30px;
+}
 .doc-page.tpl-stripe .doc-footer-company { color: var(--doc-accent) !important; }
-.doc-page.tpl-stripe .doc-annexure-header { padding-left: 32px; border-bottom: 1px solid #e0e4ef; }
+.doc-page.tpl-stripe .doc-footer-contact,
+.doc-page.tpl-stripe .doc-footer-right   { color: var(--doc-text) !important; opacity: 0.45; }
+.doc-page.tpl-stripe .doc-annexure-header { padding-left: 30px; border-bottom: 1px solid rgba(0,0,0,0.1) !important; }
 
-/* tpl-bold */
-.doc-page.tpl-bold .doc-header { border-bottom: 4px solid var(--doc-accent); background: #fafafa; padding: 26px 36px; }
-.doc-page.tpl-bold .doc-doc-type { font-size: 32px; letter-spacing: 3px; font-weight: 900; }
-.doc-page.tpl-bold .doc-company-name-fallback { font-size: 28px; letter-spacing: 1px; }
-.doc-page.tpl-bold .doc-meta { background: #f4f5f8 !important; border-bottom: 2px solid var(--doc-accent); }
-.doc-page.tpl-bold .doc-table thead tr { background: #1a1a2e !important; }
+/* ─── 6. BOLD ────────────────────────────────────
+   Header is FLIPPED: doc-type huge on LEFT,
+   logo & company name on RIGHT.
+   Meta: 2-col wide grid, header-bg fill.
+   Table header: uses --doc-text (dark) not accent.  */
+.doc-page.tpl-bold .doc-header {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  border-bottom: 5px solid var(--doc-accent) !important;
+  padding: 24px 36px; gap: 20px;
+}
+.doc-page.tpl-bold .doc-logo-area { flex-shrink: 0; min-height: unset; }
+.doc-page.tpl-bold .doc-title-block { flex: 1; text-align: left; }
+.doc-page.tpl-bold .doc-doc-type {
+  font-size: 52px; font-weight: 900;
+  letter-spacing: 1px; line-height: 0.95;
+  color: var(--doc-accent) !important;
+}
+.doc-page.tpl-bold .doc-ref-number { font-size: 12px; margin-top: 8px; }
+.doc-page.tpl-bold .doc-meta {
+  background: var(--doc-header-bg) !important;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 2px solid var(--doc-accent);
+}
+.doc-page.tpl-bold .doc-table thead tr { background: var(--doc-text) !important; }
+.doc-page.tpl-bold .doc-table thead th { color: #fff !important; opacity: 0.9; }
 .doc-page.tpl-bold .doc-totals-section { border-top: 3px solid var(--doc-accent); }
-.doc-page.tpl-bold .doc-footer { border-top: 4px solid var(--doc-accent); }
-.doc-page.tpl-bold .doc-annexure-header { border-bottom: 4px solid var(--doc-accent); }
-.doc-page.tpl-bold .doc-annexure-title { font-size: 26px; font-weight: 900; letter-spacing: 3px; }
+.doc-page.tpl-bold .doc-footer         { border-top: 5px solid var(--doc-accent) !important; }
+.doc-page.tpl-bold .doc-annexure-header {
+  display: flex; flex-direction: row-reverse;
+  border-bottom: 5px solid var(--doc-accent) !important;
+}
+.doc-page.tpl-bold .doc-annexure-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
 
-/* tpl-executive */
-.doc-page.tpl-executive .doc-header { border-top: 3px solid var(--doc-accent); border-bottom: 1px solid #ddd; padding: 20px 36px 16px; }
-.doc-page.tpl-executive .doc-doc-type { font-size: 18px; font-weight: 700; letter-spacing: 4px; border-bottom: 1px solid var(--doc-accent); padding-bottom: 4px; display: inline-block; }
-.doc-page.tpl-executive .doc-meta { background: #f9f9fb !important; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }
-.doc-page.tpl-executive .doc-table thead tr { background: var(--doc-accent) !important; }
-.doc-page.tpl-executive .doc-totals-section { border-top: 2px solid #ddd; }
-.doc-page.tpl-executive .doc-bottom-section { border-top: 2px solid #ddd; }
-.doc-page.tpl-executive .doc-footer { border-top: 3px solid var(--doc-accent); }
-.doc-page.tpl-executive .doc-annexure-header { border-top: 3px solid var(--doc-accent); border-bottom: 1px solid #ddd; }
-.doc-page.tpl-executive .doc-annexure-title { font-size: 18px; letter-spacing: 4px; font-weight: 700; }
+/* ─── 7. EXECUTIVE ───────────────────────────────
+   Double rule at top (thick + thin gap).
+   Meta blocks are individual bordered cards,
+   each with an accent top edge — like label boxes.
+   Footer: minimal, no bg, right-aligned text.       */
+.doc-page.tpl-executive .doc-header {
+  border-top: 4px solid var(--doc-accent);
+  margin-top: 4px;
+  box-shadow: 0 -3px 0 0 rgba(0,0,0,0.08);
+  border-bottom: 1px solid rgba(0,0,0,0.12) !important;
+  padding: 18px 36px 16px;
+}
+.doc-page.tpl-executive .doc-doc-type {
+  font-size: 16px; font-weight: 700; letter-spacing: 5px;
+  border-bottom: 2px solid var(--doc-accent);
+  padding-bottom: 4px; display: inline-block;
+}
+.doc-page.tpl-executive .doc-meta {
+  background: transparent !important;
+  border-bottom: none;
+  gap: 10px; padding: 16px 36px;
+  align-items: stretch;
+}
+.doc-page.tpl-executive .doc-meta-block {
+  border: 1px solid rgba(0,0,0,0.12);
+  border-top: 3px solid var(--doc-accent);
+  border-radius: 3px;
+  padding: 10px 12px;
+}
+.doc-page.tpl-executive .doc-meta-label { margin-bottom: 6px; }
+.doc-page.tpl-executive .doc-subject     { border-bottom: 1px solid rgba(0,0,0,0.08); }
+.doc-page.tpl-executive .doc-totals-section { border-top: 2px solid rgba(0,0,0,0.1); }
+.doc-page.tpl-executive .doc-bottom-section  { border-top: 2px solid rgba(0,0,0,0.1); }
+.doc-page.tpl-executive .doc-footer {
+  background: transparent !important;
+  border-top: 4px solid var(--doc-accent) !important;
+  justify-content: flex-end; gap: 20px;
+}
+.doc-page.tpl-executive .doc-footer-company { font-size: 11px; font-weight: 700; color: var(--doc-text) !important; }
+.doc-page.tpl-executive .doc-footer-contact,
+.doc-page.tpl-executive .doc-footer-right   { color: var(--doc-text) !important; opacity: 0.45; }
+.doc-page.tpl-executive .doc-annexure-header {
+  border-top: 4px solid var(--doc-accent);
+  border-bottom: 1px solid rgba(0,0,0,0.12) !important;
+}
+.doc-page.tpl-executive .doc-annexure-title { font-size: 16px; letter-spacing: 5px; font-weight: 700; }
 
-/* tpl-classic-dark */
-.doc-page.tpl-classic-dark { background: #f5f5f0; }
-.doc-page.tpl-classic-dark .doc-header { background: #1a1a2e; border-bottom: 3px solid var(--doc-accent); padding: 24px 36px; }
-.doc-page.tpl-classic-dark .doc-company-name-fallback,
-.doc-page.tpl-classic-dark .doc-company-name-with-logo { color: #fff !important; }
-.doc-page.tpl-classic-dark .doc-company-tagline { color: rgba(255,255,255,0.55) !important; opacity: 1 !important; }
-.doc-page.tpl-classic-dark .doc-doc-type { color: var(--doc-accent) !important; }
-.doc-page.tpl-classic-dark .doc-ref-number,
-.doc-page.tpl-classic-dark .doc-date-line { color: rgba(255,255,255,0.65) !important; opacity: 1 !important; }
-.doc-page.tpl-classic-dark .doc-meta { background: #eeede8 !important; }
-.doc-page.tpl-classic-dark .doc-footer { background: #1a1a2e !important; border-top: 3px solid var(--doc-accent); }
-.doc-page.tpl-classic-dark .doc-footer-company { color: #fff !important; }
-.doc-page.tpl-classic-dark .doc-footer-contact,
-.doc-page.tpl-classic-dark .doc-footer-right { color: rgba(255,255,255,0.6) !important; opacity: 1 !important; }
-.doc-page.tpl-classic-dark .doc-annexure-header { background: #1a1a2e; border-bottom: 3px solid var(--doc-accent); }
-.doc-page.tpl-classic-dark .doc-annexure-title { color: var(--doc-accent) !important; }
-.doc-page.tpl-classic-dark .doc-annexure-sub,
-.doc-page.tpl-classic-dark .doc-annexure-ref { color: rgba(255,255,255,0.65) !important; opacity: 1 !important; }
+
 
 
 /* ── Template Picker ── */
@@ -5310,34 +5472,181 @@ function applyColorHex(which, value) {
   }
 }
 
-// ── Template definitions ──
+// ── Template system ──────────────────────────────────────────
 const TEMPLATES = [
-  { id: 'classic',      name: 'Classic',     desc: 'Accent border · gray meta · color footer' },
-  { id: 'minimal',      name: 'Minimal',     desc: 'Clean white · thin lines · no fills' },
-  { id: 'corporate',    name: 'Corporate',   desc: 'Full accent header · white body' },
-  { id: 'stripe',       name: 'Stripe',      desc: 'Left accent stripe · clean layout' },
-  { id: 'bold',         name: 'Bold',        desc: 'Large type · dark table header' },
-  { id: 'executive',    name: 'Executive',   desc: 'Double rules · refined spacing' },
-  { id: 'classic-dark', name: 'Dark Header', desc: 'Dark header & footer · cream body' },
+  { id: 'classic',    name: 'Classic',    desc: 'Logo left · accent border · coloured footer' },
+  { id: 'minimal',    name: 'Minimal',    desc: 'No fills · thin ruled lines only' },
+  { id: 'corporate',  name: 'Corporate',  desc: 'Full accent header block · 4-col meta' },
+  { id: 'letterhead', name: 'Letterhead', desc: 'Company name centred full-width banner' },
+  { id: 'stripe',     name: 'Stripe',     desc: 'Left accent stripe · block left-borders' },
+  { id: 'bold',       name: 'Bold',       desc: 'Doc-type huge LEFT · logo right · dark table' },
+  { id: 'executive',  name: 'Executive',  desc: 'Double top rule · boxed meta cards' },
 ];
 
 function renderTemplatePicker() {
   const grid = document.getElementById('tplGrid');
   if (!grid) return;
   const a = state.colors?.accent || '#C8171E';
+  // Each SVG thumbnail mirrors the actual layout of that template
   const svgs = {
-    'classic':      `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect width="80" height="14" fill="${a}" opacity=".12"/><rect y="13" width="80" height="2" fill="${a}"/><rect x="4" y="4" width="18" height="5" rx="1" fill="${a}" opacity=".4"/><rect x="52" y="3" width="24" height="4" rx="1" fill="${a}" opacity=".7"/><rect y="15" width="80" height="10" fill="#f4f5f8"/><rect x="4" y="27" width="72" height="4" fill="${a}" opacity=".2"/><rect x="4" y="33" width="58" height="1.5" rx=".5" fill="#ddd"/><rect x="4" y="37" width="44" height="1.5" rx=".5" fill="#ddd"/><rect y="48" width="80" height="8" fill="${a}" opacity=".85"/></svg>`,
-    'minimal':      `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect x="4" y="5" width="18" height="5" rx="1" fill="#aaa" opacity=".4"/><rect x="52" y="4" width="24" height="4" rx="1" fill="#555" opacity=".5"/><rect y="14" width="80" height=".8" fill="#ccc"/><rect x="4" y="17" width="72" height="3" fill="#f0f0f0"/><rect x="4" y="27" width="72" height="3" fill="#f0f0f0"/><rect x="4" y="33" width="58" height="1.5" rx=".5" fill="#ddd"/><rect y="48" width="80" height=".8" fill="#bbb"/></svg>`,
-    'corporate':    `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect width="80" height="15" fill="${a}"/><rect x="4" y="4" width="18" height="5" rx="1" fill="#fff" opacity=".7"/><rect x="50" y="3" width="26" height="5" rx="1" fill="#fff" opacity=".9"/><rect x="4" y="18" width="72" height="3" fill="#f8f8f8"/><rect x="4" y="27" width="72" height="3" fill="${a}" opacity=".15"/><rect y="48" width="80" height="8" fill="${a}"/></svg>`,
-    'stripe':       `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect width="5" height="56" fill="${a}"/><rect x="9" y="5" width="18" height="5" rx="1" fill="#aaa" opacity=".4"/><rect x="52" y="4" width="24" height="4" rx="1" fill="#555" opacity=".5"/><rect x="5" y="14" width="75" height=".8" fill="#ddd"/><rect x="9" y="27" width="67" height="3" fill="${a}" opacity=".15"/><rect x="9" y="33" width="55" height="1.5" rx=".5" fill="#ddd"/><rect x="5" y="48" width="75" height=".8" fill="${a}" opacity=".6"/></svg>`,
-    'bold':         `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect width="80" height="16" fill="#fafafa"/><rect x="4" y="4" width="20" height="7" rx="1" fill="${a}" opacity=".5"/><rect x="46" y="2" width="30" height="9" rx="1" fill="${a}" opacity=".8"/><rect y="16" width="80" height="3" fill="${a}"/><rect x="4" y="27" width="72" height="4" fill="#1a1a2e"/><rect x="4" y="33" width="58" height="1.5" rx=".5" fill="#ddd"/><rect y="48" width="80" height="8" fill="${a}"/></svg>`,
-    'executive':    `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#fff"/><rect y="0" width="80" height="2" fill="${a}"/><rect x="4" y="7" width="18" height="5" rx="1" fill="#aaa" opacity=".4"/><rect x="52" y="7" width="24" height="4" rx="1" fill="#555" opacity=".5"/><rect y="16" width="80" height="1.5" fill="${a}"/><rect x="4" y="19" width="72" height="3" fill="#f9f9fb"/><rect x="4" y="27" width="72" height="3" fill="${a}" opacity=".15"/><rect y="49" width="80" height="2" fill="${a}"/></svg>`,
-    'classic-dark': `<svg viewBox="0 0 80 56"><rect width="80" height="56" fill="#f5f5f0"/><rect width="80" height="15" fill="#1a1a2e"/><rect x="4" y="4" width="18" height="5" rx="1" fill="#fff" opacity=".4"/><rect x="52" y="3" width="24" height="4" rx="1" fill="${a}" opacity=".9"/><rect y="15" width="80" height="2" fill="${a}"/><rect x="4" y="19" width="72" height="3" fill="#eeede8"/><rect x="4" y="27" width="72" height="3" fill="${a}" opacity=".15"/><rect y="48" width="80" height="8" fill="#1a1a2e"/></svg>`,
+    // Classic: logo-left | title-right, gray meta band, accent footer
+    classic: `<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+      <rect width="80" height="60" fill="#fff"/>
+      <rect width="80" height="16" fill="${a}" opacity=".1"/>
+      <rect x="4" y="5" width="16" height="6" rx="1" fill="${a}" opacity=".3"/>
+      <rect x="4" y="12" width="22" height="1.5" rx=".5" fill="#ccc" opacity=".6"/>
+      <rect x="50" y="4" width="26" height="5" rx="1" fill="${a}" opacity=".65"/>
+      <rect x="54" y="11" width="22" height="1.5" rx=".5" fill="#aaa" opacity=".4"/>
+      <rect y="16" width="80" height="2" fill="${a}"/>
+      <rect y="18" width="80" height="12" fill="${a}" opacity=".07"/>
+      <rect x="4" y="20" width="11" height="1.5" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="4" y="23" width="17" height="1.5" rx=".5" fill="#ccc"/>
+      <rect x="30" y="20" width="11" height="1.5" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="30" y="23" width="14" height="1.5" rx=".5" fill="#ccc"/>
+      <rect x="56" y="20" width="11" height="1.5" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="56" y="23" width="16" height="1.5" rx=".5" fill="#ccc"/>
+      <rect y="30" width="80" height=".8" fill="#ddd"/>
+      <rect x="4" y="32" width="72" height="4.5" fill="${a}" opacity=".18"/>
+      <rect x="4" y="38.5" width="56" height="1.5" rx=".5" fill="#ddd"/>
+      <rect x="4" y="42" width="42" height="1.5" rx=".5" fill="#ddd"/>
+      <rect x="4" y="45.5" width="48" height="1.5" rx=".5" fill="#ddd"/>
+      <rect y="52" width="80" height="8" fill="${a}" opacity=".85"/>
+    </svg>`,
+    // Minimal: ruled lines only, no fills
+    minimal: `<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+      <rect width="80" height="60" fill="#fff"/>
+      <rect x="4" y="5" width="16" height="6" rx="1" fill="#bbb" opacity=".3"/>
+      <rect x="4" y="12" width="22" height="1.5" rx=".5" fill="#ddd"/>
+      <rect x="52" y="4" width="24" height="5" rx="1" fill="#999" opacity=".3"/>
+      <rect x="56" y="11" width="20" height="1.5" rx=".5" fill="#ccc" opacity=".4"/>
+      <rect y="16" width="80" height="1.5" fill="${a}"/>
+      <rect x="4" y="20" width="11" height="1.2" rx=".5" fill="${a}" opacity=".35"/>
+      <rect x="4" y="23" width="17" height="1.2" rx=".5" fill="#ddd"/>
+      <rect x="27" y="18" width=".8" height="12" fill="#ddd"/>
+      <rect x="30" y="20" width="11" height="1.2" rx=".5" fill="${a}" opacity=".35"/>
+      <rect x="53" y="18" width=".8" height="12" fill="#ddd"/>
+      <rect x="56" y="20" width="11" height="1.2" rx=".5" fill="${a}" opacity=".35"/>
+      <rect y="30" width="80" height=".8" fill="#ccc"/>
+      <rect x="4" y="32" width="72" height="4" fill="#f0f0f0"/>
+      <rect x="4" y="38" width="56" height="1.2" rx=".5" fill="#ddd"/>
+      <rect x="4" y="41.5" width="42" height="1.2" rx=".5" fill="#ddd"/>
+      <rect y="52" width="80" height="1.5" fill="${a}"/>
+      <rect x="20" y="55" width="40" height="1.5" rx=".5" fill="#ccc"/>
+    </svg>`,
+    // Corporate: full accent block header, then white 4-col meta
+    corporate: `<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+      <rect width="80" height="60" fill="#fff"/>
+      <rect width="80" height="18" fill="${a}"/>
+      <rect x="4" y="5" width="16" height="6" rx="1" fill="#fff" opacity=".4"/>
+      <rect x="4" y="12" width="22" height="1.5" rx=".5" fill="#fff" opacity=".25"/>
+      <rect x="46" y="4" width="30" height="6" rx="1" fill="#fff" opacity=".8"/>
+      <rect x="52" y="11" width="24" height="1.5" rx=".5" fill="#fff" opacity=".4"/>
+      <rect y="18" width="80" height="1.5" fill="${a}" opacity=".3"/>
+      <rect y="19.5" width="80" height="12" fill="#f8f8f8"/>
+      <rect x="4" y="21.5" width="9" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="4" y="24.5" width="13" height="1.2" rx=".5" fill="#ccc"/>
+      <rect x="22" y="21.5" width="9" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="22" y="24.5" width="13" height="1.2" rx=".5" fill="#ccc"/>
+      <rect x="42" y="21.5" width="9" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="42" y="24.5" width="11" height="1.2" rx=".5" fill="#ccc"/>
+      <rect x="62" y="21.5" width="9" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect y="31.5" width="80" height="1.5" fill="${a}" opacity=".3"/>
+      <rect x="4" y="34" width="72" height="4" fill="${a}" opacity=".15"/>
+      <rect x="4" y="40" width="56" height="1.2" rx=".5" fill="#ddd"/>
+      <rect x="4" y="43.5" width="42" height="1.2" rx=".5" fill="#ddd"/>
+      <rect y="52" width="80" height="8" fill="${a}"/>
+    </svg>`,
+    // Letterhead: company name full-width centred banner, doc info below
+    letterhead: `<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+      <rect width="80" height="60" fill="#fff"/>
+      <rect x="14" y="4" width="52" height="8" rx="1.5" fill="${a}" opacity=".25"/>
+      <rect x="26" y="13.5" width="28" height="1.5" rx=".5" fill="#ccc"/>
+      <rect y="17" width="80" height=".7" fill="#ddd"/>
+      <rect y="17.7" width="80" height="8" fill="${a}" opacity=".07"/>
+      <rect x="48" y="19" width="28" height="5" rx="1" fill="${a}" opacity=".65"/>
+      <rect x="52" y="25" width="24" height="1.5" rx=".5" fill="#aaa" opacity=".4"/>
+      <rect y="27.5" width="80" height="2.5" fill="${a}"/>
+      <rect y="30" width="80" height="11" fill="${a}" opacity=".07"/>
+      <rect x="4" y="32" width="9" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="4" y="35" width="13" height="1.2" rx=".5" fill="#ccc"/>
+      <rect x="22" y="32" width="9" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="42" y="32" width="9" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="62" y="32" width="9" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect y="41" width="80" height=".7" fill="#ddd"/>
+      <rect x="4" y="43" width="72" height="4" fill="${a}" opacity=".15"/>
+      <rect x="4" y="49" width="56" height="1.2" rx=".5" fill="#ddd"/>
+      <rect y="54" width="80" height="6" fill="${a}" opacity=".85"/>
+    </svg>`,
+    // Stripe: 6px left bar, meta blocks with left micro-stripes
+    stripe: `<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+      <rect width="80" height="60" fill="#fff"/>
+      <rect width="6" height="60" fill="${a}"/>
+      <rect x="10" y="5" width="16" height="6" rx="1" fill="#bbb" opacity=".3"/>
+      <rect x="10" y="12" width="22" height="1.5" rx=".5" fill="#ddd"/>
+      <rect x="52" y="5" width="22" height="5" rx="1" fill="#999" opacity=".35"/>
+      <rect x="56" y="12" width="18" height="1.5" rx=".5" fill="#ccc" opacity=".4"/>
+      <rect x="6" y="17" width="74" height=".8" fill="#ddd"/>
+      <rect x="10" y="19" width="3" height="10" fill="${a}" opacity=".55"/>
+      <rect x="15" y="20" width="10" height="1.2" rx=".5" fill="${a}" opacity=".4"/>
+      <rect x="15" y="23.5" width="14" height="1.2" rx=".5" fill="#ccc"/>
+      <rect x="33" y="19" width="3" height="10" fill="${a}" opacity=".55"/>
+      <rect x="38" y="20" width="10" height="1.2" rx=".5" fill="${a}" opacity=".4"/>
+      <rect x="55" y="19" width="3" height="10" fill="${a}" opacity=".55"/>
+      <rect x="60" y="20" width="12" height="1.2" rx=".5" fill="${a}" opacity=".4"/>
+      <rect x="6" y="30" width="74" height=".8" fill="#ddd"/>
+      <rect x="10" y="32" width="66" height="4.5" fill="${a}" opacity=".15"/>
+      <rect x="10" y="39" width="54" height="1.2" rx=".5" fill="#ddd"/>
+      <rect x="10" y="42.5" width="40" height="1.2" rx=".5" fill="#ddd"/>
+      <rect x="6" y="52" width="74" height=".8" fill="${a}" opacity=".5"/>
+      <rect x="10" y="55" width="20" height="1.5" rx=".5" fill="${a}" opacity=".4"/>
+    </svg>`,
+    // Bold: doc-type huge LEFT, logo RIGHT (flipped), dark table header
+    bold: `<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+      <rect width="80" height="60" fill="#fff"/>
+      <rect x="4" y="3" width="42" height="12" rx="2" fill="${a}" opacity=".7"/>
+      <rect x="4" y="16" width="20" height="1.5" rx=".5" fill="#bbb" opacity=".4"/>
+      <rect x="60" y="4" width="16" height="10" rx="1" fill="#ddd" opacity=".5"/>
+      <rect y="20" width="80" height="5" fill="${a}"/>
+      <rect y="25" width="80" height="11" fill="${a}" opacity=".07"/>
+      <rect x="4" y="27" width="10" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="4" y="30.5" width="16" height="1.2" rx=".5" fill="#ccc"/>
+      <rect x="42" y="27" width="10" height="1.2" rx=".5" fill="${a}" opacity=".5"/>
+      <rect x="42" y="30.5" width="14" height="1.2" rx=".5" fill="#ccc"/>
+      <rect y="36" width="80" height="1.5" fill="${a}" opacity=".3"/>
+      <rect x="4" y="38" width="72" height="5" fill="#1a1a2e" opacity=".8"/>
+      <rect x="4" y="45" width="56" height="1.2" rx=".5" fill="#ddd"/>
+      <rect x="4" y="48.5" width="42" height="1.2" rx=".5" fill="#ddd"/>
+      <rect y="52" width="80" height="8" fill="${a}" opacity=".85"/>
+    </svg>`,
+    // Executive: double top rule, boxed meta cards, right-aligned footer
+    executive: `<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+      <rect width="80" height="60" fill="#fff"/>
+      <rect y="1" width="80" height="3" fill="${a}"/>
+      <rect y="6" width="80" height=".8" fill="${a}" opacity=".25"/>
+      <rect x="4" y="9" width="16" height="6" rx="1" fill="#bbb" opacity=".3"/>
+      <rect x="50" y="8" width="26" height="5" rx="1" fill="#999" opacity=".35"/>
+      <rect x="50" y="14" width="26" height="2" rx=".5" fill="${a}" opacity=".6"/>
+      <rect y="17.5" width="80" height=".8" fill="#ddd"/>
+      <rect x="4" y="20" width="22" height="11" rx="1" fill="transparent" stroke="${a}" stroke-width=".8"/>
+      <rect x="4" y="20" width="22" height="3" fill="${a}" opacity=".2"/>
+      <rect x="6" y="25" width="16" height="1.2" rx=".5" fill="#ccc"/>
+      <rect x="30" y="20" width="22" height="11" rx="1" fill="transparent" stroke="${a}" stroke-width=".8"/>
+      <rect x="30" y="20" width="22" height="3" fill="${a}" opacity=".2"/>
+      <rect x="32" y="25" width="16" height="1.2" rx=".5" fill="#ccc"/>
+      <rect x="56" y="20" width="20" height="11" rx="1" fill="transparent" stroke="${a}" stroke-width=".8"/>
+      <rect x="56" y="20" width="20" height="3" fill="${a}" opacity=".2"/>
+      <rect x="58" y="25" width="14" height="1.2" rx=".5" fill="#ccc"/>
+      <rect x="4" y="33" width="72" height="4.5" fill="${a}" opacity=".15"/>
+      <rect x="4" y="40" width="56" height="1.2" rx=".5" fill="#ddd"/>
+      <rect x="4" y="43.5" width="42" height="1.2" rx=".5" fill="#ddd"/>
+      <rect y="51" width="80" height="3" fill="${a}"/>
+      <rect x="44" y="55.5" width="32" height="1.5" rx=".5" fill="#bbb"/>
+    </svg>`,
   };
   grid.innerHTML = TEMPLATES.map(t => `
-    <div class="tpl-card${(state.template||'classic') === t.id ? ' active' : ''}"
+    <div class="tpl-card${(state.template || 'classic') === t.id ? ' active' : ''}"
       data-tpl="${t.id}" onclick="applyTemplate('${t.id}')" title="${t.desc}">
-      <div class="tpl-preview">${svgs[t.id]||''}</div>
+      <div class="tpl-preview">${svgs[t.id] || ''}</div>
       <div class="tpl-label">${t.name}</div>
     </div>`).join('');
 }
@@ -5348,8 +5657,8 @@ function applyTemplate(id, doSync = true) {
   if (!docPage) return;
   TEMPLATES.forEach(t => docPage.classList.remove('tpl-' + t.id));
   if (id && id !== 'classic') docPage.classList.add('tpl-' + id);
-  document.querySelectorAll('.tpl-card').forEach(card =>
-    card.classList.toggle('active', card.dataset.tpl === id));
+  document.querySelectorAll('.tpl-card').forEach(c =>
+    c.classList.toggle('active', c.dataset.tpl === id));
   applyColors();
   if (doSync) syncDoc();
 }
@@ -5362,6 +5671,11 @@ function applyColors() {
   const footerBg = state.colors.footerBg || '#ffffff';
   docPage.style.setProperty('--doc-accent', accent);
   docPage.style.setProperty('--doc-text', text);
+  docPage.style.setProperty('--doc-header-bg', header);
+  docPage.style.setProperty('--doc-footer-bg', footerBg);
+  // Derived vars: white-over-accent for templates with colored headers
+  docPage.style.setProperty('--doc-accent-text', isColorDark(accent) ? '#fff' : text);
+  docPage.style.setProperty('--doc-footer-text', isColorDark(footerBg) ? '#fff' : accent);
   document.querySelectorAll('.doc-table thead tr').forEach(tr => tr.style.background = accent);
   document.querySelectorAll('.doc-header').forEach(el => el.style.borderBottomColor = accent);
   document.querySelectorAll('.doc-meta').forEach(el => el.style.background = header);
