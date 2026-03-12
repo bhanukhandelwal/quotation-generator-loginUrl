@@ -4300,7 +4300,7 @@ async function openQuotation(uid) {
   if (snap.docType) { state.docType = snap.docType; const sel = document.getElementById('docTypeSelect'); if (sel) sel.value = snap.docType; }
   if (snap.colors)  { state.colors = snap.colors;  applyColors(); }
   if (snap.template) { applyTemplate(snap.template, false); }
-  if (snap.items)   { state.items  = snap.items; }
+  if (snap.items)   { state.items  = snap.items; if (typeof renderItems === 'function') renderItems(); }
   if (snap.showItemDiscount !== undefined) {
     state.showItemDiscount = snap.showItemDiscount;
     const btn   = document.getElementById('discToggleBtn');
@@ -4328,7 +4328,17 @@ async function openQuotation(uid) {
     });
   }
 
+  // Ensure discOnDocRow visibility matches restored showItemDiscount
+  const _discOnDocRow = document.getElementById('discOnDocRow');
+  if (_discOnDocRow) _discOnDocRow.style.display = state.showItemDiscount ? '' : 'none';
+
   syncDoc();
+
+  // Force showDiscountOnDoc state — must come AFTER syncDoc so it overrides any resets
+  const _savedShowDiscOnDoc = snap.showDiscountOnDoc || false;
+  state.showDiscountOnDoc = _savedShowDiscOnDoc && state.showItemDiscount;
+  const _chkDisc = document.getElementById('showDiscOnDoc');
+  if (_chkDisc) _chkDisc.checked = state.showDiscountOnDoc;
 
   // Allow switching between locked quotes without exiting first
   state.viewingLocked = { id: uid, refNo: snap.refNo };
@@ -4336,6 +4346,8 @@ async function openQuotation(uid) {
   _updateQuotSaveBtn();
   await renderQuotationsList();
   showToast('Viewing: ' + (snap.refNo || uid), 'ok');
+
+
 }
 
 async function deleteQuotation(uid) {
@@ -5277,12 +5289,13 @@ function syncDoc() {
 
   // Items Table
   const docTbody = document.getElementById('docTableBody');
+  // Show/hide disc column header — must be outside items check so it restores on saved-doc open
+  const _docDiscTh = document.getElementById('docDiscTh');
+  if (_docDiscTh) _docDiscTh.style.display = state.showDiscountOnDoc ? '' : 'none';
+
   if (state.items.length === 0) {
     docTbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#ccc;padding:20px;font-size:11.5px">No items added yet.</td></tr>`;
   } else {
-    // Show/hide disc column header in live preview
-    const _docDiscTh = document.getElementById('docDiscTh');
-    if (_docDiscTh) _docDiscTh.style.display = state.showDiscountOnDoc ? '' : 'none';
 
     // Hide GST% column for Delivery Challan
     const _isDC = state.docType === 'delivery_challan';
@@ -5292,9 +5305,16 @@ function syncDoc() {
     docTbody.innerHTML = state.items.map((item, idx) => {
       const _disc    = parseFloat(item.disc) || 0;
       const _discAmt = state.showItemDiscount ? _disc : 0;
-      const amount   = (parseFloat(item.qty) || 0) * (parseFloat(item.rate) || 0) * (1 - _discAmt / 100);
+      const _rate    = parseFloat(item.rate) || 0;
+      const _qty     = parseFloat(item.qty)  || 0;
+      const amount   = _qty * _rate * (1 - _discAmt / 100);
       const gstVal   = item.gst !== undefined && item.gst !== '' ? item.gst + '%' : '—';
-      const discCell = state.showDiscountOnDoc
+      // When disc column is hidden but discount is applied, fold discount into unit price
+      const _showDiscCol = state.showDiscountOnDoc && state.showItemDiscount;
+      const displayRate  = (!_showDiscCol && _discAmt > 0)
+        ? _rate * (1 - _discAmt / 100)   // discounted unit price
+        : _rate;                           // original rate
+      const discCell = _showDiscCol
         ? `<td class="center" style="font-size:11px;opacity:0.75">${_disc > 0 ? _disc + '%' : '—'}</td>`
         : '';
       const gstCell  = _isDC ? '' : `<td class="center" style="font-size:11px;opacity:0.75">${gstVal}</td>`;
@@ -5303,7 +5323,7 @@ function syncDoc() {
         <td><div class="item-desc">${escHtml(item.desc) || '<span style="color:#ccc">—</span>'}</div>${item.spec ? `<div class="item-spec">${escHtml(item.spec)}</div>` : ''}</td>
         <td class="right">${item.qty}</td>
         <td class="center">${escHtml(item.unit)}</td>
-        <td class="right">${fmt(parseFloat(item.rate) || 0)}</td>
+        <td class="right">${fmt(displayRate)}</td>
         ${discCell}
         ${gstCell}
         <td class="right">${fmt(amount)}</td>
@@ -5506,9 +5526,12 @@ function checkPageOverflow() {
   const itemsHTML = state.items.map((item, idx) => {
     const _disc    = parseFloat(item.disc) || 0;
     const _discAmt = state.showItemDiscount ? _disc : 0;
-    const amount   = (parseFloat(item.qty) || 0) * (parseFloat(item.rate) || 0) * (1 - _discAmt / 100);
+    const _rate    = parseFloat(item.rate) || 0;
+    const amount   = (parseFloat(item.qty) || 0) * _rate * (1 - _discAmt / 100);
     const gstVal   = item.gst !== undefined && item.gst !== '' ? item.gst + '%' : '—';
-    const discCell = _showDiscOnDoc
+    const _showDiscCol = _showDiscOnDoc && state.showItemDiscount;
+    const displayRate  = (!_showDiscCol && _discAmt > 0) ? _rate * (1 - _discAmt / 100) : _rate;
+    const discCell = _showDiscCol
       ? `<td class="center" style="font-size:11px;opacity:0.75">${_disc > 0 ? _disc + '%' : '—'}</td>`
       : '';
     return `<tr>
@@ -5516,7 +5539,7 @@ function checkPageOverflow() {
       <td><div class="item-desc">${escHtml(item.desc) || '<span style="color:#ccc">—</span>'}</div>${item.spec ? `<div class="item-spec">${escHtml(item.spec)}</div>` : ''}</td>
       <td class="right">${item.qty}</td>
       <td class="center">${escHtml(item.unit)}</td>
-      <td class="right">${fmt(item.rate)}</td>
+      <td class="right">${fmt(displayRate)}</td>
       ${discCell}
       <td class="center" style="font-size:11px;opacity:0.75">${gstVal}</td>
       <td class="right">${fmt(amount)}</td>
