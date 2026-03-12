@@ -2759,6 +2759,12 @@ select option { background: var(--panel-bg); }
   opacity: 0.45;
   user-select: none;
 }
+.locked #discOnDocRow,
+.locked #discToggleBtn {
+  pointer-events: auto;
+  opacity: 1;
+  user-select: auto;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -4261,8 +4267,8 @@ async function saveCurrentQuotation() {
     colors:     JSON.parse(JSON.stringify(state.colors)),
     template:   state.template || 'classic',
     items:      JSON.parse(JSON.stringify(state.items)),
-    showItemDiscount:  state.showItemDiscount  || false,
-    showDiscountOnDoc: state.showDiscountOnDoc || false,
+    showItemDiscount:  document.getElementById('discToggleBtn')?.classList.contains('btn-default') || false,
+    showDiscountOnDoc: document.getElementById('showDiscOnDoc')?.checked || false,
     contacts:   JSON.parse(JSON.stringify(state.contacts || [])),
     // All input field values
     fields: {}
@@ -4292,6 +4298,36 @@ async function saveCurrentQuotation() {
   }
 }
 
+
+// Refresh sidebar UI elements whose .value was restored from snap.fields
+// but whose visual labels / pickers / visibility weren't re-drawn.
+function _refreshSidebarAfterRestore() {
+  // Slider value labels
+  const sliderLabels = [
+    ['companyNameSize',       'companyNameSizeVal',       'px'],
+    ['taglineLetterSpacing',  'taglineLetterSpacingVal',  'px'],
+    ['taglineWordSpacing',    'taglineWordSpacingVal',    'px'],
+    ['productImgHeight',      'productImgHeightVal',      'px'],
+    ['watermarkOpacity',      'watermarkOpacityVal',      '%'],
+    ['watermarkSize',         'watermarkSizeVal',         'px'],
+    ['watermarkRotation',     'watermarkRotationVal',     '°'],
+  ];
+  sliderLabels.forEach(([inputId, labelId, unit]) => {
+    const inp = document.getElementById(inputId);
+    const lbl = document.getElementById(labelId);
+    if (inp && lbl) lbl.textContent = inp.value + unit;
+  });
+
+  // Template picker — highlight active template card
+  if (typeof renderTemplatePicker === 'function') renderTemplatePicker();
+
+  // Product image height label (not in loadState)
+  const pih = document.getElementById('productImgHeight');
+  const pihl = document.getElementById('productImgHeightVal');
+  if (pih && pihl) pihl.textContent = pih.value + 'px';
+
+}
+
 async function openQuotation(uid) {
   const snap = await DM.loadQuotation(uid);
   if (!snap) { showToast('Could not load quotation.', 'warn'); return; }
@@ -4302,7 +4338,11 @@ async function openQuotation(uid) {
   if (snap.template) { applyTemplate(snap.template, false); }
   if (snap.items)   { state.items  = snap.items; if (typeof renderItems === 'function') renderItems(); }
   if (snap.showItemDiscount !== undefined) {
-    state.showItemDiscount = snap.showItemDiscount;
+    const _hasDiscValues = (snap.items || []).some(i => parseFloat(i.disc) > 0);
+    // Old buggy snapshot: showItemDiscount=false but items have disc values
+    // → both showItemDiscount and showDiscountOnDoc were saved wrong, auto-enable both
+    const _oldBuggySnap  = !snap.showItemDiscount && _hasDiscValues;
+    state.showItemDiscount = snap.showItemDiscount || _oldBuggySnap;
     const btn   = document.getElementById('discToggleBtn');
     const rowEl = document.getElementById('discOnDocRow');
     if (btn) {
@@ -4310,9 +4350,18 @@ async function openQuotation(uid) {
       btn.classList.toggle('btn-ghost',   !state.showItemDiscount);
     }
     if (rowEl) rowEl.style.display = state.showItemDiscount ? '' : 'none';
-  }
-  if (snap.showDiscountOnDoc !== undefined) {
-    state.showDiscountOnDoc = snap.showDiscountOnDoc;
+    // showDiscountOnDoc:
+    // Old buggy snap (_oldBuggySnap=true): showDiscountOnDoc was always saved false regardless
+    //   of user intent — auto-enable since disc data exists (user can Update to correct)
+    // New clean snap (_oldBuggySnap=false): snap.showItemDiscount was correctly saved as true
+    //   → trust snap.showDiscountOnDoc exactly
+    state.showDiscountOnDoc = _oldBuggySnap
+      ? state.showItemDiscount
+      : (snap.showDiscountOnDoc && state.showItemDiscount);
+    const chk = document.getElementById('showDiscOnDoc');
+    if (chk) chk.checked = state.showDiscountOnDoc;
+  } else if (snap.showDiscountOnDoc !== undefined) {
+    state.showDiscountOnDoc = snap.showDiscountOnDoc && state.showItemDiscount;
     const chk = document.getElementById('showDiscOnDoc');
     if (chk) chk.checked = state.showDiscountOnDoc;
   }
@@ -4340,6 +4389,9 @@ async function openQuotation(uid) {
   const _chkDisc = document.getElementById('showDiscOnDoc');
   if (_chkDisc) _chkDisc.checked = state.showDiscountOnDoc;
 
+  // Refresh all sidebar UI that snap.fields restores by .value but doesn't visually update
+  _refreshSidebarAfterRestore();
+
   // Allow switching between locked quotes without exiting first
   state.viewingLocked = { id: uid, refNo: snap.refNo };
   _applyLockMode(true);
@@ -4347,7 +4399,27 @@ async function openQuotation(uid) {
   await renderQuotationsList();
   showToast('Viewing: ' + (snap.refNo || uid), 'ok');
 
-
+  // Final re-apply: checkPageOverflow fires at rAF+50ms (during the await above).
+  // After all async settles, force correct discount state and re-run syncDoc so
+  // the annexure table renders with the right columns and discounted amounts.
+  const _hasDisc2           = (snap.items || []).some(i => parseFloat(i.disc) > 0);
+  const _oldBuggyFinal      = !snap.showItemDiscount && _hasDisc2;
+  const _finalShowItemDisc  = snap.showItemDiscount || _oldBuggyFinal;
+  const _finalShowDiscOnDoc = _oldBuggyFinal
+    ? _finalShowItemDisc
+    : ((snap.showDiscountOnDoc || false) && _finalShowItemDisc);
+  state.showItemDiscount  = _finalShowItemDisc;
+  state.showDiscountOnDoc = _finalShowDiscOnDoc;
+  const _chkFinal = document.getElementById('showDiscOnDoc');
+  if (_chkFinal) _chkFinal.checked = _finalShowDiscOnDoc;
+  const _btnFinal = document.getElementById('discToggleBtn');
+  if (_btnFinal) {
+    _btnFinal.classList.toggle('btn-default', _finalShowItemDisc);
+    _btnFinal.classList.toggle('btn-ghost',   !_finalShowItemDisc);
+  }
+  const _rowFinal = document.getElementById('discOnDocRow');
+  if (_rowFinal) _rowFinal.style.display = _finalShowItemDisc ? '' : 'none';
+  syncDoc();
 }
 
 async function deleteQuotation(uid) {
@@ -4373,11 +4445,14 @@ async function updateQuotation(uid) {
   const snapshot = {
     id: uid, savedAt: new Date().toISOString(),
     refNo, clientName, docDate,
-    docType:  state.docType,
-    colors:   JSON.parse(JSON.stringify(state.colors)),
-    items:    JSON.parse(JSON.stringify(state.items)),
-    contacts: JSON.parse(JSON.stringify(state.contacts || [])),
-    fields:   {}
+    docType:           state.docType,
+    colors:            JSON.parse(JSON.stringify(state.colors)),
+    template:          state.template || 'classic',
+    items:             JSON.parse(JSON.stringify(state.items)),
+    showItemDiscount:  document.getElementById('discToggleBtn')?.classList.contains('btn-default') || false,
+    showDiscountOnDoc: document.getElementById('showDiscOnDoc')?.checked || false,
+    contacts:          JSON.parse(JSON.stringify(state.contacts || [])),
+    fields:            {}
   };
   document.querySelectorAll('.sidebar-content input, .sidebar-content select, .sidebar-content textarea').forEach(el => {
     if (el.id) snapshot.fields[el.id] = el.type === 'checkbox' ? el.checked : el.value;
@@ -4830,6 +4905,12 @@ function loadState() {
       });
       applyColors();
     }
+    // Sync discount state from restored checkboxes into state object
+    const _discTogBtn = document.getElementById('discToggleBtn');
+    if (_discTogBtn) state.showItemDiscount = _discTogBtn.classList.contains('btn-default');
+    const _showDiscChk = document.getElementById('showDiscOnDoc');
+    if (_showDiscChk) state.showDiscountOnDoc = _showDiscChk.checked && state.showItemDiscount;
+
     const ns = document.getElementById('companyNameSize');
     if (ns) document.getElementById('companyNameSizeVal').textContent = ns.value + 'px';
     const wo = document.getElementById('watermarkOpacity');
