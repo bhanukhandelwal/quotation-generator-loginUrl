@@ -1266,10 +1266,13 @@ select option { background: var(--panel-bg); }
   color: var(--doc-accent); margin-bottom: 10px;
 }
 .doc-product-images-grid {
-  display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;
+  display: grid;
+  gap: 10px;
+  align-items: start;
 }
 .doc-product-img-item {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
+  width: 100%;
 }
 .doc-product-img-item img {
   object-fit: contain; border: 1px solid #e0e4ef;
@@ -4886,11 +4889,12 @@ function syncProductImagesToDoc() {
 
   if (!show || images.length === 0) { section.style.display = 'none'; return; }
 
-  const imgWidth = Math.floor((794 - 72 - (perRow - 1) * 10) / perRow);
+  // CSS grid repeat(perRow, 1fr) — works for any template width
+  grid.style.gridTemplateColumns = `repeat(${perRow}, 1fr)`;
   grid.innerHTML = images.map(p => `
     <div class="doc-product-img-item">
-      <div style="width:${imgWidth}px;height:${height}px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fafafa;border:1px solid #e0e4ef;border-radius:4px;flex-shrink:0">
-        <img src="${p.data}" alt="" style="max-width:${imgWidth}px;max-height:${height}px;width:auto;height:auto;display:block;">
+      <div style="width:100%;height:${height}px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fafafa;border:1px solid #e0e4ef;border-radius:4px;">
+        <img src="${p.data}" alt="" style="max-width:100%;max-height:${height}px;width:auto;height:auto;display:block;">
       </div>
       ${p.caption ? `<div class="doc-product-img-caption">${p.caption}</div>` : ''}
     </div>
