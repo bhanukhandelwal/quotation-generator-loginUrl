@@ -159,14 +159,37 @@ body {
 
 /* ===== SIDEBAR ===== */
 .sidebar {
-  width: 480px;
-  min-width: 480px;
+  width: var(--sidebar-w, 560px);
+  min-width: var(--sidebar-w, 560px);
   background: var(--panel-bg);
   border-left: 1px solid var(--panel-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
+
+.sidebar-resizer {
+  position: absolute;
+  left: -5px;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  cursor: ew-resize;
+  z-index: 20;
+}
+.sidebar-resizer::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(200,23,30,0.0);
+  transition: background 0.12s;
+}
+.sidebar-resizer:hover::after { background: rgba(200,23,30,0.35); }
+body.resizing .sidebar-resizer::after { background: rgba(200,23,30,0.55); }
 
 /* Settings drawer (desktop + tablet): hide sidebar completely when collapsed */
 .sidebar[data-hidden="true"] { display: none; }
@@ -221,7 +244,11 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 14px;
+  min-height: 0;
+  text-align: left;
 }
+
+.panel-section { text-align: left; }
 
 .sidebar-content::-webkit-scrollbar { width: 4px; }
 .sidebar-content::-webkit-scrollbar-track { background: transparent; }
@@ -408,7 +435,9 @@ select option { background: var(--panel-bg); }
   width: 100%;
   border-collapse: collapse;
   font-size: 11.5px;
+  table-layout: fixed; /* keep columns within sidebar width */
 }
+.items-table-wrapper { text-align: left; }
 
 .items-table th {
   background: var(--panel-mid);
@@ -464,14 +493,34 @@ select option { background: var(--panel-bg); }
 
 .items-table .col-drag   { width: 14px; padding: 0 1px !important; }
 .items-table .col-sno    { width: 18px; text-align: center; }
-.items-table .col-desc   { min-width: 100px; }
-.items-table .col-qty    { width: 38px; }
-.items-table .col-unit   { width: 36px; }
-.items-table .col-rate   { width: 60px; }
-.items-table .col-gst    { width: 52px; }
+.items-table .col-desc   { min-width: 220px; }
+.items-table td.col-desc { width: auto; }
+.items-table td.col-desc input { min-width: 0; }
+.items-table { table-layout: auto; }
+.items-table .col-qty    { width: 52px; }
+.items-table .col-unit   { width: 52px; }
+.items-table .col-rate   { width: 78px; }
+.items-table .col-gst    { width: 58px; }
 .items-table .col-disc { width: 52px; }
 .col-amount { width: 66px; }
 .items-table .col-del    { width: 20px; }
+
+.items-table .col-amount { width: 86px; }
+.items-table td.col-qty input,
+.items-table td.col-unit input,
+.items-table td.col-rate input {
+  padding: 6px 8px !important;
+  font-size: 12px !important;
+}
+.items-table td.col-gst select {
+  padding: 6px 6px !important;
+  font-size: 12px !important;
+}
+.items-table .item-amount {
+  padding: 6px 8px;
+  font-size: 12px;
+  text-align: right;
+}
 
 .item-amount {
   font-family: 'DM Mono', monospace;
@@ -813,7 +862,39 @@ select option { background: var(--panel-bg); }
   background: rgba(200,23,30,0.12);
 }
 
+.doc-gst-select {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font: inherit;
+  font-size: 11px;
+  color: var(--doc-text);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 2px 16px 2px 6px;
+  line-height: 1.2;
+  text-align: center;
+  outline: none;
+}
+.doc-gst-select::-ms-expand { display: none; }
+.doc-gst-select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(0,0,0,0.55) 50%),
+    linear-gradient(135deg, rgba(0,0,0,0.55) 50%, transparent 50%);
+  background-position: calc(100% - 10px) 55%, calc(100% - 6px) 55%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+}
+.doc-gst-select:focus {
+  box-shadow: 0 0 0 2px rgba(200,23,30,0.18) inset;
+  border-radius: 4px;
+}
+
 body.exporting .no-export { display: none !important; }
+body.exporting .doc-gst-select { display: none !important; }
+body.exporting .doc-gst-frozen { display: inline-block !important; }
+.doc-gst-frozen { display: none; }
 
 .doc-add-item-row td {
   padding: 10px 10px !important;
@@ -1067,6 +1148,9 @@ body.exporting .no-export { display: none !important; }
   border-top: 1px solid #e0e4ef;
   padding: 10px 36px;
   background: #f8f9fd;
+  /* Never let partner logos spill outside the A4 page */
+  max-height: 84px;
+  overflow: hidden;
 }
 
 .doc-footer-logos-inner {
@@ -3296,6 +3380,7 @@ body.exporting .doc-placeholder { display: none !important; }
 
   <!-- SIDEBAR -->
   <div class="sidebar">
+    <div class="sidebar-resizer" title="Drag to resize"></div>
     <div class="sidebar-nav">
       <button class="snav-btn active" onclick="showPanel('company')" id="tab-company">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
@@ -4701,6 +4786,18 @@ function initPreviewItemEditing() {
   const handler = (e) => {
     const el = e.target;
     if (!el || !el.getAttribute) return;
+    // GST% dropdown in preview
+    if (e.type === 'change' && el.classList && el.classList.contains('doc-gst-select')) {
+      const id = el.getAttribute('data-item-id');
+      if (!id) return;
+      const item = state.items.find(i => String(i.id) === String(id));
+      if (!item) return;
+      const n = parseFloat(String(el.value || '').replace(/,/g, ''));
+      item.gst = Number.isFinite(n) ? n : 0;
+      if (typeof renderItems === 'function') renderItems();
+      syncDoc();
+      return;
+    }
     const id = el.getAttribute('data-item-id');
     const field = el.getAttribute('data-item-field');
     if (!id || !field) return;
@@ -4749,6 +4846,7 @@ function initPreviewItemEditing() {
   document.addEventListener('focusin', handler, true);
   document.addEventListener('focusout', handler, true);
   document.addEventListener('keydown', handler, true);
+  document.addEventListener('change', handler, true);
 }
 
 let _clientGstinPickerEl = null;
@@ -5246,12 +5344,65 @@ document.addEventListener('DOMContentLoaded', () => {
   initPreviewInlineEditing();
   initPreviewItemEditing();
   initSettingsToggle();
+  initSidebarResize();
 
   DM.init().then(() => {
     _restoreActiveCompanyProfile();
     renderCoProfileList();
   });
 });
+
+function initSidebarResize() {
+  const sidebar = document.querySelector('.sidebar');
+  const grip = document.querySelector('.sidebar-resizer');
+  if (!sidebar || !grip) return;
+
+  // Restore last width
+  try {
+    const w = parseInt(localStorage.getItem('qg.sidebarWidthPx') || '', 10);
+    if (Number.isFinite(w) && w >= 420 && w <= 820) {
+      document.documentElement.style.setProperty('--sidebar-w', w + 'px');
+    }
+  } catch {}
+
+  let startX = 0;
+  let startW = 0;
+  const onMove = (ev) => {
+    const x = (ev.touches && ev.touches[0]) ? ev.touches[0].clientX : ev.clientX;
+    const dx = startX - x; // sidebar is on right: drag left => wider
+    let next = Math.round(startW + dx);
+    next = Math.max(420, Math.min(820, next));
+    document.documentElement.style.setProperty('--sidebar-w', next + 'px');
+  };
+  const onUp = () => {
+    document.body.classList.remove('resizing');
+    window.removeEventListener('mousemove', onMove, true);
+    window.removeEventListener('mouseup', onUp, true);
+    window.removeEventListener('touchmove', onMove, true);
+    window.removeEventListener('touchend', onUp, true);
+    try {
+      const cur = getComputedStyle(sidebar).width;
+      const w = parseInt(cur, 10);
+      if (Number.isFinite(w)) localStorage.setItem('qg.sidebarWidthPx', String(w));
+    } catch {}
+  };
+
+  const onDown = (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    const x = (ev.touches && ev.touches[0]) ? ev.touches[0].clientX : ev.clientX;
+    startX = x;
+    startW = parseInt(getComputedStyle(sidebar).width, 10) || 560;
+    document.body.classList.add('resizing');
+    window.addEventListener('mousemove', onMove, true);
+    window.addEventListener('mouseup', onUp, true);
+    window.addEventListener('touchmove', onMove, true);
+    window.addEventListener('touchend', onUp, true);
+  };
+
+  grip.addEventListener('mousedown', onDown, true);
+  grip.addEventListener('touchstart', onDown, { capture: true, passive: false });
+}
 
 async function _restoreActiveCompanyProfile() {
   // Handled inside DM._onLogin — this is a no-op stub kept for compatibility
@@ -6034,7 +6185,22 @@ async function exportPDF() {
   btn.disabled = true;
   btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Generating…`;
 
+  let _frozen = [];
   try {
+    // Freeze <select> elements that html2canvas often fails to capture
+    _frozen = [];
+    document.querySelectorAll('.doc-gst-select').forEach(sel => {
+      try {
+        const txt = sel.options && sel.selectedIndex >= 0 ? (sel.options[sel.selectedIndex].text || '') : (sel.value || '');
+        const span = document.createElement('span');
+        span.className = 'doc-gst-frozen';
+        span.textContent = txt;
+        span.style.cssText = 'font-size:11px;color:var(--doc-text);';
+        sel.parentNode.insertBefore(span, sel.nextSibling);
+        _frozen.push(span);
+      } catch {}
+    });
+
     const { jsPDF } = window.jspdf;
     const A4_W = 210; // mm
     const A4_H = 297; // mm
@@ -6044,6 +6210,30 @@ async function exportPDF() {
     const pages = Array.from(document.querySelectorAll('.preview-pane .doc-page'));
 
     const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+
+    const _fitA4 = (pxW, pxH) => {
+      const scaleByW = A4_W / (pxW || 1);
+      let w = A4_W;
+      let h = pxH * scaleByW;
+      if (h > A4_H) {
+        const scaleByH = A4_H / (pxH || 1);
+        h = A4_H;
+        w = pxW * scaleByH;
+      }
+      const x = (A4_W - w) / 2;
+      const y = (A4_H - h) / 2;
+      return { x, y, w, h };
+    };
+
+    const _base64ToU8 = (dataUrl) => {
+      const s = String(dataUrl || '');
+      const b64 = s.includes(',') ? s.split(',')[1] : s;
+      const bin = atob(b64);
+      const out = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    };
+
 
     for (let i = 0; i < pages.length; i++) {
       const page = pages[i];
@@ -6107,6 +6297,8 @@ async function exportPDF() {
     console.error('PDF export failed:', err);
     alert('PDF export failed. Please try the Print button instead.\n\n' + err.message);
   } finally {
+    // Cleanup frozen placeholders
+    try { _frozen?.forEach(n => n && n.parentNode && n.parentNode.removeChild(n)); } catch {}
     document.body.classList.remove('exporting');
     btn.disabled = false;
     btn.innerHTML = origHTML;
@@ -6870,6 +7062,10 @@ function syncDoc() {
       const _qty     = parseFloat(item.qty)  || 0;
       const amount   = _qty * _rate * (1 - _discAmt / 100);
       const gstVal   = item.gst !== undefined && item.gst !== '' ? item.gst + '%' : '—';
+      const gstSlabsForRow = getGstSlabs();
+      const gstOpts = gstSlabsForRow.map(v =>
+        `<option value="${v}"${String(v) === String(item.gst) ? ' selected' : ''}>${v}%</option>`
+      ).join('');
       // When disc column is hidden but discount is applied, fold discount into unit price
       const _showDiscCol = state.showDiscountOnDoc && state.showItemDiscount;
       const displayRateRaw  = (!_showDiscCol && _discAmt > 0)
@@ -6879,18 +7075,19 @@ function syncDoc() {
       const discCell = _showDiscCol
         ? `<td class="center" style="font-size:11px;opacity:0.75">${_disc > 0 ? _disc + '%' : '—'}</td>`
         : '';
-      const gstCell  = _isDC ? '' : `<td class="center" style="font-size:11px;opacity:0.75">${gstVal}</td>`;
+      const gstCell  = _isDC ? '' : `<td class="center"><select class="doc-gst-select" data-item-id="${item.id}">${gstOpts}</select></td>`;
       return `<tr>
         <td class="sno">${idx + 1}</td>
         <td>
           <div class="item-desc" contenteditable="true" spellcheck="false" data-item-id="${item.id}" data-item-field="desc">${escHtml(item.desc) || ''}</div>
           <div class="item-spec" contenteditable="true" spellcheck="false" data-item-id="${item.id}" data-item-field="spec">${escHtml(item.spec) || ''}</div>
+          
         </td>
         <td class="right" contenteditable="true" spellcheck="false" data-item-id="${item.id}" data-item-field="qty">${escHtml(item.qty)}</td>
         <td class="center" contenteditable="true" spellcheck="false" data-item-id="${item.id}" data-item-field="unit">${escHtml(item.unit)}</td>
         <td class="right" contenteditable="true" spellcheck="false" data-item-id="${item.id}" data-item-field="rate">${escHtml(displayRate)}</td>
         ${discCell}
-        ${_isDC ? '' : `<td class="center" contenteditable="true" spellcheck="false" data-item-id="${item.id}" data-item-field="gst">${escHtml(item.gst)}</td>`}
+        ${gstCell}
         <td class="right">${fmt(amount)}</td>
         <td class="col-del no-export"><button class="doc-del-item-btn" type="button" onclick="removeItem(${item.id})">×</button></td>
       </tr>`;
