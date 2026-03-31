@@ -3172,7 +3172,7 @@ body.exporting .no-export { display: none !important; }
       <div class="doc-letter-body" id="docLetterBody" style="display:none">
         <div class="doc-letter-to" id="docLetterTo" style="display:none">
           <div class="doc-letter-to-label">To,</div>
-          <div class="doc-letter-to-name doc-editable" id="docLetterToName" contenteditable="true" spellcheck="false" data-edit-input="clientName" data-edit-mode="single" title="Edit client/company name"></div>
+          <div class="doc-letter-to-name doc-editable doc-client-picker doc-client-name" id="docLetterToName" contenteditable="true" spellcheck="false" data-edit-input="clientName" data-edit-mode="single" ondblclick="openClientPicker(event)" title="Double-click to pick saved client (or type)"></div>
           <div class="doc-letter-to-contact" id="docLetterToContactName" style="display:none"></div>
           <div class="doc-letter-to-addr doc-editable" id="docLetterToAddr" contenteditable="true" spellcheck="false" data-edit-input="clientAddress" data-edit-mode="multi" title="Edit client address"></div>
           <div class="doc-letter-to-contact" id="docLetterToContact"></div>
@@ -3588,7 +3588,7 @@ body.exporting .no-export { display: none !important; }
             <input type="text" id="paymentTerms" placeholder="50% Advance, 50% on Delivery" oninput="syncDoc()">
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" id="placeOfSupplyGroup">
           <label>Place of Supply</label>
           <input type="text" id="placeOfSupply" placeholder="Mumbai, Maharashtra" oninput="syncDoc()">
         </div>
@@ -3604,11 +3604,11 @@ body.exporting .no-export { display: none !important; }
           <!-- Toggles -->
           <div class="form-row" style="align-items:center">
             <div class="form-group" style="flex:1"><label>Show "To" Block</label></div>
-            <label class="switch"><input type="checkbox" id="letterShowTo" onchange="syncDoc()"><span class="switch-slider"></span></label>
+            <label class="switch"><input type="checkbox" id="letterShowTo" checked onchange="syncDoc()"><span class="switch-slider"></span></label>
           </div>
           <div class="form-row" style="align-items:center">
             <div class="form-group" style="flex:1"><label>Show Seal &amp; Signature</label></div>
-            <label class="switch"><input type="checkbox" id="letterShowSeal" onchange="syncDoc()"><span class="switch-slider"></span></label>
+            <label class="switch"><input type="checkbox" id="letterShowSeal" checked onchange="syncDoc()"><span class="switch-slider"></span></label>
           </div>
 
           <!-- Font -->
@@ -5838,8 +5838,8 @@ function _applyLetterheadMode(isLH) {
   // Hide Notes & Terms sidebar section for letterhead
   const _ntSection = document.getElementById('sidebarNotesTerms');
   if (_ntSection) _ntSection.style.display = isLH ? 'none' : '';
-  // Hide document fields irrelevant to letterhead (Valid Until, Delivery, Payment Terms)
-  ['validUntilGroup', 'dueDaysGroup', 'deliveryPaymentRow'].forEach(id => {
+  // Hide document fields irrelevant to letterhead (Valid Until, Delivery, Payment Terms, Place of Supply)
+  ['validUntilGroup', 'dueDaysGroup', 'deliveryPaymentRow', 'placeOfSupplyGroup'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = isLH ? 'none' : '';
   });
@@ -6658,8 +6658,12 @@ function syncDoc() {
       const _lhToContact     = document.getElementById('docLetterToContact');
       const _lhToGstin       = document.getElementById('docLetterToGstin');
 
-      // Company name (bold, 1em relative to section font)
-      if (_lhToName) _lhToName.textContent = val('clientName') || '';
+      // Company name (bold, 1em relative to section font) — keep placeholder for easy editing
+      if (_lhToName) {
+        const _nm = val('clientName') || '';
+        _lhToName.textContent = _nm || '—';
+        _lhToName.classList.toggle('doc-placeholder', !_nm);
+      }
 
       // Contact person name with salutation (first contact, shown after company name)
       const _firstContact = (state.contacts || []).find(ct => ct.name);
@@ -6673,8 +6677,12 @@ function syncDoc() {
         }
       }
 
-      // Address
-      if (_lhToAddr) _lhToAddr.textContent = val('clientAddress') || '';
+      // Address — keep placeholder for easy editing
+      if (_lhToAddr) {
+        const _ad = val('clientAddress') || '';
+        _lhToAddr.textContent = _ad || '—';
+        _lhToAddr.classList.toggle('doc-placeholder', !_ad);
+      }
 
       // Phone + email (all contacts)
       const _contactParts = (state.contacts || [])
@@ -6700,30 +6708,40 @@ function syncDoc() {
       // With "To" block: subject appears below To section, left-aligned with "Re:"
       if (_subjNormal) _subjNormal.style.display = 'none';
       if (_subjInBody) {
-        _subjInBody.style.display     = _subject ? '' : 'none';
+        _subjInBody.style.display     = '';
         _subjInBody.style.fontSize    = _fSubject;
         _subjInBody.style.textAlign   = 'left';
         _subjInBody.style.fontWeight  = '600';
       }
-      if (_subjInBodyTxt) _subjInBodyTxt.textContent = _subject ? ('Re: ' + _subject) : '';
+      if (_subjInBodyTxt) {
+        const _s = _subject || '';
+        _subjInBodyTxt.textContent = _s ? ('Re: ' + _s) : '—';
+        _subjInBodyTxt.classList.toggle('doc-placeholder', !_s);
+      }
     } else {
       // Without "To" block: subject is centred, bold, no "Re:" label
       if (_subjNormal) _subjNormal.style.display = 'none'; // hide the normal one always for LH
       if (_subjInBody) {
-        _subjInBody.style.display    = _subject ? '' : 'none';
+        _subjInBody.style.display    = '';
         _subjInBody.style.fontSize   = _fSubject;
         _subjInBody.style.textAlign  = 'center';
         _subjInBody.style.fontWeight = '700';
       }
-      if (_subjInBodyTxt) _subjInBodyTxt.textContent = _subject || '';
+      if (_subjInBodyTxt) {
+        const _s = _subject || '';
+        _subjInBodyTxt.textContent = _s || '—';
+        _subjInBodyTxt.classList.toggle('doc-placeholder', !_s);
+      }
     }
 
     // ── Body text ─────────────────────────────────────────────
     const _lhText = document.getElementById('docLetterText');
     if (_lhText) {
-      _lhText.textContent      = document.getElementById('letterBody')?.value || '';
+      const _body = document.getElementById('letterBody')?.value || '';
+      _lhText.textContent      = _body || '—';
       _lhText.style.fontFamily = _bodyFont;
       _lhText.style.fontSize   = _fBody;
+      _lhText.classList.toggle('doc-placeholder', !_body);
     }
 
     // ── Seal ──────────────────────────────────────────────────
@@ -6824,7 +6842,8 @@ function syncDoc() {
     document.getElementById('docAmtWords').textContent = numberToWords(T.grand, currency);
   }
   const pos = val('placeOfSupply');
-  document.getElementById('docPlaceSupply').textContent = pos ? 'Place of Supply: ' + pos : '';
+  const _posEl = document.getElementById('docPlaceSupply');
+  if (_posEl) _posEl.textContent = (state.docType === 'letterhead') ? '' : (pos ? 'Place of Supply: ' + pos : '');
 
   // Bank Details
   const showBank = document.getElementById('showBankDetails').checked;
