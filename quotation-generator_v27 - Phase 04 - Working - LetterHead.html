@@ -3172,17 +3172,17 @@ body.exporting .no-export { display: none !important; }
       <div class="doc-letter-body" id="docLetterBody" style="display:none">
         <div class="doc-letter-to" id="docLetterTo" style="display:none">
           <div class="doc-letter-to-label">To,</div>
-          <div class="doc-letter-to-name" id="docLetterToName"></div>
+          <div class="doc-letter-to-name doc-editable" id="docLetterToName" contenteditable="true" spellcheck="false" data-edit-input="clientName" data-edit-mode="single" title="Edit client/company name"></div>
           <div class="doc-letter-to-contact" id="docLetterToContactName" style="display:none"></div>
-          <div class="doc-letter-to-addr" id="docLetterToAddr"></div>
+          <div class="doc-letter-to-addr doc-editable" id="docLetterToAddr" contenteditable="true" spellcheck="false" data-edit-input="clientAddress" data-edit-mode="multi" title="Edit client address"></div>
           <div class="doc-letter-to-contact" id="docLetterToContact"></div>
           <div class="doc-letter-to-contact" id="docLetterToGstin" style="display:none"></div>
         </div>
         <!-- Subject line shown here when "To" block is visible -->
         <div class="doc-letter-subject" id="docLetterSubject" style="display:none">
-          <span id="docLetterSubjectText"></span>
+          <span id="docLetterSubjectText" class="doc-editable" contenteditable="true" spellcheck="false" data-edit-input="docSubject" data-edit-mode="single" title="Edit subject"></span>
         </div>
-        <div class="doc-letter-text" id="docLetterText"></div>
+        <div class="doc-letter-text doc-editable" id="docLetterText" contenteditable="true" spellcheck="false" data-edit-input="letterBody" data-edit-mode="multi" title="Edit letter body"></div>
         <div class="doc-letter-seal" id="docLetterSeal" style="display:none">
           <div class="doc-letter-seal-inner">
             <div class="doc-letter-seal-for" id="docLetterSealFor"></div>
@@ -6740,14 +6740,14 @@ function syncDoc() {
     const _subjInBody = document.getElementById('docLetterSubject');
     if (_subjInBody) _subjInBody.style.display = 'none';
   }
-  // Hide items/totals/meta for letterhead; show for everything else
+  // Hide items/totals for letterhead; keep meta visible so preview editing still works.
   const _docTableSec  = document.querySelector('.doc-table-section');
   const _docTotalsSec = document.getElementById('docTotalsSection');
   const _docMeta      = document.getElementById('docMeta');
   const _docAmtWords  = document.getElementById('docAmtWordsBlock');
   if (_docTableSec)  _docTableSec.style.display  = _isLH ? 'none' : '';
   if (_docTotalsSec) _docTotalsSec.style.display  = _isLH ? 'none' : '';
-  if (_docMeta)      _docMeta.style.display        = _isLH ? 'none' : '';
+  if (_docMeta)      _docMeta.style.display        = '';
   if (_docAmtWords)  _docAmtWords.style.display    = _isLH ? 'none' : '';
 
   // Items Table
