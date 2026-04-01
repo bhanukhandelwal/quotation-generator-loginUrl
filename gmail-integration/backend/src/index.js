@@ -46,14 +46,12 @@ app.post('/api/gmail/reply-draft', async (req, res) => {
     }
     const data = parsed.data;
 
-    // Optional: lightweight token sanity check
+    // Validate token exists (throws if invalid)
     await oauth.getTokenInfo(accessToken);
 
-    const gmail = google.gmail({
-      version: 'v1',
-      auth: new google.auth.OAuth2(),
-    });
-    gmail.context._options.auth.setCredentials({ access_token: accessToken });
+    const authClient = new google.auth.OAuth2();
+    authClient.setCredentials({ access_token: accessToken });
+    const gmail = google.gmail({ version: 'v1', auth: authClient });
 
     const rawMime = buildReplyDraftMime({
       to: data.to,

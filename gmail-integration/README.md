@@ -19,3 +19,7 @@ This folder contains a working starting point to integrate the Quotation Generat
 3. Configure OAuth consent + scopes (Workspace admin).
 4. Deploy the add-on domain-wide and point it at the `webapp/` URL.
 
+### Step-by-step (your checklist)
+
+See **`SETUP.md`** for Google Cloud, OAuth client ID, hosting URLs, Apps Script add-on, and troubleshooting.
+
