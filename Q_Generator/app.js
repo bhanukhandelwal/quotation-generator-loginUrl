@@ -4557,7 +4557,7 @@ const DM = (() => {
       // Extensions (Grammarly, MS Editor, "Read" tools, etc.) inject content.js/read.js and
       // often log "Host validation failed" / "not in insights whitelist" on localhost — not from this app.
       if (/^localhost$|^127\.0\.0\.1$/i.test(location.hostname)) {
-        console.info('[QG] If login hangs, try InPrivate/Incognito with extensions off — see DEV-SERVER.txt (Host validation).');
+        console.info('[QG] If login hangs, try InPrivate/Incognito with extensions off (browser extensions often break localhost).');
       }
       // Show appropriate overlay immediately — no waiting for session check
       if (_isRecoveryUrl()) _showSetPasswordUI();
