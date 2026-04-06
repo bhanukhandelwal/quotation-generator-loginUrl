@@ -4,7 +4,7 @@ Browser-based quotations, invoices, and related documents with PDF export and Su
 
 ## Where this project lives
 
-All app source for Q Generator is under **`Q Generator/Q_Generator/`** (this folder). The parent **`Q Generator/index.html`** redirects into this app. There is **no** Q Generator entry file at the workspace root (`BHANU`); keep new files for this product here or under `Q Generator/`, not outside.
+All app source for Q Generator is in **`Q Generator/`** (this folder): `index.html`, `app.js`, `styles.css`, `templates/`, `supabase/`, etc. Do not add Q Generator–specific files at the workspace root (`BHANU`); keep them here. In Cursor/VS Code, open **`Q Generator`** as the project folder (there is no longer a nested `Q_Generator` subfolder in git).
 
 ## Deployment & custom domain
 

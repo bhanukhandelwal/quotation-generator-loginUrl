@@ -40,7 +40,7 @@ Propagation can take minutes to 48 hours.
 
 ## 3. App URL shape (important for this repo)
 
-Today the app may live under a **nested path** (e.g. `.../Q Generator/Q_Generator/`). For a **clean public URL** (`https://app.yourbrand.com/` with no extra path):
+The app source lives under **`Q Generator/`** in this repo (e.g. GitHub Pages project URL `https://user.github.io/repo-name/Q%20Generator/`). For a **clean public URL** (`https://app.yourbrand.com/` with no extra path):
 
 - Prefer a **deploy step** that publishes **only** the app folder contents (`index.html`, `app.js`, `styles.css`, `templates/`, etc.) to the **root** of the GitHub Pages branch, **or**
 - Use a **second repo** `yourbrand.github.io` / dedicated repo whose root *is* the built app.

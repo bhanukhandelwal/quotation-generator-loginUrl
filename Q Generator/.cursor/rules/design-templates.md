@@ -1,4 +1,4 @@
-# Q_Generator — document layout
+# Q Generator — document layout
 
 Templates are **separate stylesheets** (not baked into `styles.css`):
 
